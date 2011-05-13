@@ -5,4 +5,8 @@ ant compile
 
 
 all accept standard json classes as input and use jsonPath to navigate to plotted values.
-Makes heavy use of Stanford's protovis library http://vis.stanford.edu/protovis/. 
+Makes heavy use of Stanford's protovis library 
+http://vis.stanford.edu/protovis/.
+
+resulting js code is compiled using closure:
+http://code.google.com/closure/compiler/
