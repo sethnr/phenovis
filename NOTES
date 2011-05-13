@@ -1,0 +1,8 @@
+visualisation classes for the CHADO natural diversity module, 
+
+build via ant:
+ant compile
+
+
+all accept standard json classes as input and use jsonPath to navigate to plotted values.
+Makes heavy use of Stanford's protovis library http://vis.stanford.edu/protovis/. 
