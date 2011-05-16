@@ -10,7 +10,7 @@ function getDataHash_map (xstring, ystring, zstring) {
       var zval = this.get("Z")[i];
       return {x: xval,  
 	     y: yval, 
-	     z: zval,
+	     z: zval
 	  }},valHash);
   
   dataHash.sortBy(function(d) {return Number(d.y)});
@@ -49,9 +49,9 @@ function geoplot(posHash, mapDiv) {
 		return projection.fromLatLngToDivPixel(ll);
 	    });	    
 	
-	function x(p) p.x; function y(p) p.y;
+	function x(p) {return p.x}; function y(p) {return p.y};
 	
-	pv.max(pixels, y) + r
+	// pv.max(pixels, y) + r;
 	
 	var x = { min: pv.min(pixels, x) - r, max: pv.max(pixels, x) + r };
 	var y = { min: pv.min(pixels, y) - r, max: pv.max(pixels, y) + r };
@@ -74,14 +74,14 @@ function geoplot(posHash, mapDiv) {
 	.add(pv.Panel)
 	.data(this.mapPoints)
 	.add(pv.Dot)
-	.left(function() pixels[this.parent.index].x)
-	.top(function() pixels[this.parent.index].y)
-	.strokeStyle(function(d) z(d.z))
-	.fillStyle(function(d) z(d.z).alpha(.2))
+	.left(function() {return pixels[this.parent.index].x})
+	.top(function() {return pixels[this.parent.index].y})
+	.strokeStyle(function(d) {return z(d.z)})
+	.fillStyle(function(d) {return z(d.z).alpha(.2)})
 	.size(140)
 	.anchor("center").add(pv.Label)
 	.textStyle("white")
-	.text(function(x, d) d.z)
+	.text(function(x, d) {return d.z})
 	.root.render();
 	
     }

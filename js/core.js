@@ -124,7 +124,7 @@ function getDataHash (x, xvals, y, yvals, z, zvals) {
       var zval = this.get("Z")[i];
       return {x: xval, xpos: x(xval), 
 	  y: yval, ypos: y(yval),
-	  z: zval, zpos: z(zval),
+	  z: zval, zpos: z(zval)
 	  }},valHash);
   
   dataHash.sortBy(function(d) {return Number(d.y)});
@@ -383,7 +383,7 @@ function frequencyMatrix(data, w, h, xstring, ystring, zstring) {
 		var xval = this.get("X")[i];
 		var yval = this.get("Y")[i];
 		return {X: xval, 
-			Y: yval,
+			Y: yval
 			}},valHash);
 
 	data.experiments.each(function(d,i) {
@@ -422,7 +422,7 @@ function frequencyMatrix(data, w, h, xstring, ystring, zstring) {
 		var zval = this.get("Z")[i];
 		return {source: xval, 
 			target: yval,
-			value: zval,
+			value: zval
 			}},valHash);
     }
     

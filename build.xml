@@ -1,6 +1,6 @@
 <project name="phenovis" default="cat" basedir=".">
     <property name="version" value="0.01"/>
-    <property name="src.dir" value="${basedir}/src"/>
+    <property name="src.dir" value="${basedir}/js"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="build.lib" value="${basedir}/lib"/>
     <property name="gmodnatdiv.ar.dir" value="${basedir}../public/javascript/"/>
@@ -20,19 +20,19 @@
     </target>
 
     <target name="cat" depends="clean, init" description="Concatenate">
-	<concat destfile="build/phenovis_${version}.js">
-	    <fileset refid=all.js />
+	<concat destfile="build/phenovis-${version}.js">
+	<fileset dir="${src.dir}">
+	    <include name="**/*.js"/>
+	</fileset>
+ 	    
 	</concat>
     </target>
 
     <target name="compress" depends="cat" description="make phenovis-min.js">
-	<apply executable="java" parallel="false">
-	    <filelist dir="build" files="application.js" /> 
-            <arg line="-jar" />
-            <arg path="${build.lib}/compiler.jar" /> 
-            <arg line="-i ${build.dir}/phenovis-${version}.js" />
-            <arg line="-o ${build.dir}/phenovis-${version}-min.js" />
-	</apply>
+	<java jar="${build.lib}/compiler.jar" fork="true"> 
+            <arg line="--js ${build.dir}/phenovis-${version}.js" />
+            <arg line="--js_output_file ${build.dir}/phenovis-${version}-min.js" />
+        </java>
     </target>
 
     <target name="gmodnatdiv_ar" depends="cat" description="cp files to expected natdiv directory">
