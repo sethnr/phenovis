@@ -112,6 +112,8 @@ function findVals (valString, data) {
 }
 
 /* make 3-dim data structure for plotting */
+/* to be replaced with getDataHash_map method (i.e. separate position grid from value grid - only used foor scatter plot jittering */
+
 function getDataHash (x, xvals, y, yvals, z, zvals) {
   var valHash = new Hash();
   valHash.set("X",xvals);

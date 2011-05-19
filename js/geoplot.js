@@ -11,22 +11,27 @@ function getDataHash_map (xstring, ystring, zstring) {
       return {x: xval,  
 	     y: yval, 
 	     z: zval
-	  }},valHash);
+	      /* obj: jsonobject */
+	      }},valHash);
   
   dataHash.sortBy(function(d) {return Number(d.y)});
   return dataHash;
 }
- 
+
+
 function geoplot(posHash, mapDiv) {
- 
+
+
     function Canvas(mapPoints, map){
 	this.mapPoints = mapPoints;
 	this.map = map;
 	this.setMap(map);
+	this.panel_ = new pv.Panel().overflow("visible");
+//	this.z = pv.Colors.category10();
+	return this;
     }
-    		
+    
     Canvas.prototype = pv.extend(google.maps.OverlayView);
-    var z = pv.Colors.category10();
     
     Canvas.prototype.onAdd = function(){
 	this.canvas = document.createElement("div");
@@ -36,16 +41,37 @@ function geoplot(posHash, mapDiv) {
 	this.getPanes().mapPane.appendChild(this.canvas);
     }
     
+    Canvas.prototype.getMap = function(){
+	return this.map;
+    }
+
+    Canvas.prototype.getPanel = function(){
+	return this.panel_;
+    }
+   
+    Canvas.prototype.setPanel = function(newPanel){
+	this.panel_ = newPanel;
+    }
+   
     Canvas.prototype.draw = function(){
+	
 	var m = this.map;
 	var c = this.canvas;
-	var r = 20;
+	var r = 200;
+	var z = pv.Colors.category10();
 	
 	var projection = this.getProjection();
 	
+	var cSet = new ClusterSet(this, this.mapPoints);
+	var clusters = cSet.getClusters();
+
+//	for(var ci=0; ci<clusters.length && ci < 6; ci++) {
+//	    alert(ci+" "+clusters[ci].markers_.length);
+//	}
+	
+
 	var pixels = this.mapPoints.map(function(d) {
 		var ll = new google.maps.LatLng(d.x, d.y);
-		
 		return projection.fromLatLngToDivPixel(ll);
 	    });	    
 	
@@ -60,19 +86,17 @@ function geoplot(posHash, mapDiv) {
 	c.style.left = x.min + "px";
 	c.style.top = y.min + "px";
 	
-	/*	alert("x = "+x.min+"->"+x.max+"\n"+"y = "+y.min+"->"+y.max+
-		"\nwidth = "+c.style.width+
-		"\nheight = "+c.style.height+
-		"\nleft = "+c.style.left+
-		"\ntop = "+c.style.top
-		);		
-	*/
-	new pv.Panel()
+
+
+	var mapPanel = new pv.Panel();
+
+/*
+	mapPanel
 	.canvas(c)
 	.left(-x.min)
 	.top(-y.min)
 	.add(pv.Panel)
-	.data(this.mapPoints)
+	.data(this.mapPoints)	
 	.add(pv.Dot)
 	.left(function() {return pixels[this.parent.index].x})
 	.top(function() {return pixels[this.parent.index].y})
@@ -81,9 +105,41 @@ function geoplot(posHash, mapDiv) {
 	.size(140)
 	.anchor("center").add(pv.Label)
 	.textStyle("white")
-	.text(function(x, d) {return d.z})
-	.root.render();
+	.text(function(x, d) {return d.z});
+*/
+
+
+	mapPanel
+	.canvas(c)
+	.left(-x.min)
+	.top(-y.min)
+	.add(pv.Panel)
+	.data(clusters)	
+	.add(pv.Dot)
+	.left(function(d) {return d.getPxX()})
+	.top(function(d) {return d.getPxY()})
+	.strokeStyle(function(d) {return z(d.markers_[0].z)})
+	.fillStyle(function(d) {return z(d.markers_[0].z).alpha(.7)})
+	.radius(function(d) {return d.getPxSize() / 2;})
+	.anchor("center").add(pv.Label)
+	.textStyle("white")
+//	.text(function(x, d) {return d.markers_[0].z});
+	.text(function(x, d) {return d.getSize()});
+
 	
+	mapPanel.root.render();
+/*
+alert(myData.root.children.length+"\n"+
+      myData.root.children[0].children.length+"\n"+
+      myData.root.children[0].children[0].children+"\n"+
+      myData.root.children[0].children[1].children+"\n"
+
+    );
+*/	
+	
+//	return mapPanel;
+	mapPanel.root.render();
+
     }
     //add the map
     var myOptions = {
@@ -91,11 +147,16 @@ function geoplot(posHash, mapDiv) {
     center: new google.maps.LatLng(12.8, -8.05),
     mapTypeId: google.maps.MapTypeId.TERRAIN
     };
-    var map = new google.maps.Map(document.getElementById("fig"),
+//    var map = new google.maps.Map(document.getElementById("fig"),
+    var map = new google.maps.Map(mapDiv,
 				  myOptions);
     //add the overlay canvas
-    var overlay = new Canvas(posHash, map);
-    return overlay;
+    var geoverlay = new Canvas(posHash, map);
+
+
+    
+    return geoverlay;
     
 }
     
+//geoplot.prototype

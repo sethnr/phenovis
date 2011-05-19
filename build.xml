@@ -3,7 +3,7 @@
     <property name="src.dir" value="${basedir}/js"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="build.lib" value="${basedir}/lib"/>
-    <property name="gmodnatdiv.ar.dir" value="${basedir}../public/javascript/"/>
+    <property name="gmodnatdiv.ar.dir" value="${basedir}/../public/javascripts/"/>
 
     <path id="all.js">
 	<fileset dir="${src.dir}">
