@@ -109,6 +109,17 @@ Cluster.prototype.getSize = function() {
   return this.markers_.length;
 };
 
+/**
+ * Returns the composition of the cluster
+ *
+ * @return {string} single z val, or 'mixed'
+ */
+Cluster.prototype.getComposition = function() {
+    var zs = this.markers_.collect(function(d) {return d.z}).uniq();
+    if(zs.length ==1) {return zs[0];}
+    else {return "mixed";}
+};
+
 
 /**
  * Returns the center of the cluster.

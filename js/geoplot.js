@@ -124,7 +124,7 @@ function geoplot(posHash, mapDiv) {
 	.anchor("center").add(pv.Label)
 	.textStyle("white")
 //	.text(function(x, d) {return d.markers_[0].z});
-	.text(function(x, d) {return d.getSize()});
+	.text(function(x, d) {return d.getSize()+" "+d.getComposition()});
 
 	
 	mapPanel.root.render();
