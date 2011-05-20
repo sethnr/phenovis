@@ -22,6 +22,26 @@ function Cluster(geoplot) {
  * @param {google.maps.Marker} marker The marker to check.
  * @return {boolean} True if the marker is already added.
  */
+Cluster.prototype.getPVMark = function() {
+    var mark = new pv.Dot;
+
+    mark.left(this.getPxX())
+    .top(this.getPxY())
+    .strokeStyle("blue")
+    .fillStyle("blue")
+    .radius(this.getPxSize() / 2)
+    .anchor("center").add(pv.Label)
+    .textStyle("white")
+    .text(this.getSize()+" "+this.getComposition());
+    return mark;
+}
+
+/**
+ * Determins if a marker is already added to the cluster.
+ *
+ * @param {google.maps.Marker} marker The marker to check.
+ * @return {boolean} True if the marker is already added.
+ */
 Cluster.prototype.isMarkerAlreadyAdded = function(marker) {
   if (this.markers_.indexOf) {
     return this.markers_.indexOf(marker) != -1;

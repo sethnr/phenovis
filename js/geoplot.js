@@ -25,8 +25,13 @@ function geoplot(posHash, mapDiv) {
     function Canvas(mapPoints, map){
 	this.mapPoints = mapPoints;
 	this.map = map;
+
+	var bounds = this.getBounds(mapPoints, 0.05);
+	map.fitBounds(bounds);
+
 	this.setMap(map);
 	this.panel_ = new pv.Panel().overflow("visible");
+
 //	this.z = pv.Colors.category10();
 	return this;
     }
@@ -43,6 +48,21 @@ function geoplot(posHash, mapDiv) {
     
     Canvas.prototype.getMap = function(){
 	return this.map;
+    }
+
+    Canvas.prototype.getBounds = function(pointsHash, margin) {
+	var b = pv.min(pointsHash, function(d) {return d.y});
+	var l = pv.min(pointsHash, function(d) {return d.x});
+	var t = pv.max(pointsHash, function(d) {return d.y});
+	var r = pv.max(pointsHash, function(d) {return d.x});
+	var mar = 0;
+	if(margin >= 0) {mar = margin;}
+	var wmar = (r-l)*mar;
+	var hmar = (t-b)*mar;
+	
+	var myBounds = new google.maps.LatLngBounds(new google.maps.LatLng(l-wmar,b-hmar),
+				      new google.maps.LatLng(r+wmar,t+hmar));
+	return myBounds;
     }
 
     Canvas.prototype.getPanel = function(){
@@ -81,12 +101,11 @@ function geoplot(posHash, mapDiv) {
 	
 	var x = { min: pv.min(pixels, x) - r, max: pv.max(pixels, x) + r };
 	var y = { min: pv.min(pixels, y) - r, max: pv.max(pixels, y) + r };
+
 	c.style.width = (x.max - x.min) + "px";
 	c.style.height = (y.max - y.min) + "px";
 	c.style.left = x.min + "px";
 	c.style.top = y.min + "px";
-	
-
 
 	var mapPanel = new pv.Panel();
 
@@ -114,7 +133,9 @@ function geoplot(posHash, mapDiv) {
 	.left(-x.min)
 	.top(-y.min)
 	.add(pv.Panel)
-	.data(clusters)	
+	.data(clusters)
+//	.add(pv.Dot).extend(function(d) {return d.getPVMark();});
+
 	.add(pv.Dot)
 	.left(function(d) {return d.getPxX()})
 	.top(function(d) {return d.getPxY()})
@@ -143,8 +164,8 @@ alert(myData.root.children.length+"\n"+
     }
     //add the map
     var myOptions = {
-    zoom: 7,
-    center: new google.maps.LatLng(12.8, -8.05),
+//    zoom: 7,
+//    center: new google.maps.LatLng(12.8, -8.05),
     mapTypeId: google.maps.MapTypeId.TERRAIN
     };
 //    var map = new google.maps.Map(document.getElementById("fig"),
