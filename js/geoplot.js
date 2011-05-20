@@ -43,7 +43,10 @@ function geoplot(posHash, mapDiv) {
 	this.canvas.setAttribute("class", "canvas");
 	this.canvas.style.position="absolute";
 	
-	this.getPanes().mapPane.appendChild(this.canvas);
+	var pane = this.getPanes().overlayMouseTarget;
+	
+	pane.appendChild(this.canvas);
+
     }
     
     Canvas.prototype.getMap = function(){

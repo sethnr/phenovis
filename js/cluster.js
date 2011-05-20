@@ -24,20 +24,35 @@ function Cluster(geoplot) {
  */
 Cluster.prototype.addPVMark = function(panel, z) {
     var mark;
+    var c = this;
     var markers = this.getMarkers();
     var comp = this.getComposition();
-
-    if(comp.length == 1) {
-	mark = panel.add(pv.Dot)    
+    if(this.getPxSize() < 20) {
+//	alert(markers.length+" "+this.getPxSize());
+	var bgMark = panel.add(pv.Dot)
 	    .left(this.getPxX())
 	    .top(this.getPxY())
-	    .strokeStyle(z(comp[0].z))
-	    .fillStyle(z(comp[0].z).alpha(0.4))
-	    .radius(this.getPxSize() / 2)
-	    .anchor("center")
-	    .add(pv.Label)
-	    .textStyle("white")
-	    .text(this.getSize()+" "+comp[0].z);
+	    .strokeStyle(pv.color("#aaa").alpha(0.4))
+	    .fillStyle(pv.color("#aaa").alpha(0.5))
+	    .radius(10)
+	    .cursor("pointer")
+	    .event("click", function() {c.clustPop()})
+    ;
+
+    }
+
+    if(comp.length == 1) {
+	mark = panel.add(pv.Dot)
+	.left(this.getPxX())
+	.top(this.getPxY())
+	.strokeStyle(z(comp[0].z))
+	.fillStyle(z(comp[0].z).alpha(0.8))
+	.radius(this.getPxSize() / 2)
+	.cursor("pointer").event("click", function() {c.clustPop()})
+	.anchor("center")
+	.add(pv.Label)
+	.textStyle("white")
+	.text(this.getSize()+" "+comp[0].z);
     }
     else {
 	
@@ -54,20 +69,18 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.textStyle("white")
 	.text(this.getSize()+" mixed ("+comp.length+" strains)");
 */
-	var wedge = mark.add(pv.Wedge)
+	var wedge = mark.add(pv.Wedge).cursor("pointer")
 	.data(comp)
-	.angle(function(d) {/*
-			      alert(d+" "+this.type+":"+this.index+" "+this.parent.type+":"+this.parent.index); */
-return (d.points.length / markers.length * 2 * Math.PI)})
+	.angle(function(d) {return (d.points.length / markers.length * 2 * Math.PI)})
 	.left(0)
-//	.title(function(d) {return d.z})
-	.fillStyle(function(d) {alert(d+" "+d.z); return z(d.z).alpha(0.8)})
+	.fillStyle(function(d) {return z(d.z).alpha(0.8)})
 	.strokeStyle("gray")
 	.top(0)
 	.outerRadius(this.getPxSize()/2)
 	.anchor("center").add(pv.Label).textAngle(0)
-	.textStyle("white")
+	.textStyle("white").cursor("pointer")
 	.text(function(d) {return d.points.length+" "+d.z});
+
 	
 //	wedge.angle(function(d) {return d /100 * 2 * Math.PI})
 //	.fillStyle(function(d) {return z(d)})
@@ -86,8 +99,23 @@ return (d.points.length / markers.length * 2 * Math.PI)})
 */
     }
 
+    mark.
+    cursor("pointer").
+    event("click", function() {c.clustPop()})
+    ;
+    
     return mark;
 }
+
+/**
+ * spawn popup menu for cluster.
+ *
+ * @return {boolean} True if the marker is already added.
+ */
+Cluster.prototype.clustPop = function() {
+    console.log("clusterPop");
+}
+
 
 /**
  * Determins if a marker is already added to the cluster.
@@ -172,15 +200,6 @@ Cluster.prototype.remove = function() {
   delete this.markers_;
 };
 
-
-/**
- * Returns the center of the cluster.
- *
- * @return {number} The cluster center.
- */
-Cluster.prototype.getSize = function() {
-  return this.markers_.length;
-};
 
 /**
  * Returns the composition of the cluster
