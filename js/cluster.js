@@ -80,34 +80,29 @@ Cluster.prototype.addPVMark = function(panel, z) {
     event("click", function() {c.clustPop()})
     ;
     
-    
+
+    //add popup panel
     popM = panel
-//    .anchor("center")
     .add(pv.Panel)
     .left(this.getPxX())
     .top(this.getPxY())
-    .width(function(d) {console.log("adding PopM"); return 100;}).height(100)
+    .width(100).height(100)
     .fillStyle(pv.color("#fff").alpha(0.5))
     .strokeStyle("grey");
-//    add(pv.Dot)
-//    .data(markers)
 
-    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
-
-    popM
-//    .data(markers)
-    .add(pv.Dot)
-   .data(markers)
- 
-    .radius(function(d) {console.log("adding dot"); return 5;})
-    .left(function(d) {console.log(this.parent.index+" "+this.index); return ((this.index + 1) % 10) * 15})
+    //add dots
+    popM.add(pv.Dot)
+    .data(markers)
+    .radius(5)
+    .left(function(d) {/*console.log(this.parent.index+" "+this.index);*/ return ((this.index % 10)+1) * 15})
     .top(function(d) {return Math.floor(((this.index) / 10) + 1) * 15})
     .fillStyle(function(d) {return z(d.z)})
     .strokeStyle(function(d) {return z(d.z)})
+    .cursor("pointer").event("click",function(d) {console.log("clicked "+d.z);})
     ; 
-    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
+//    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
 
-    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);    
+//    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);    
     return mark;
 }
 
