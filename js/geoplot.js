@@ -141,29 +141,7 @@ function geoplot(posHash, mapDiv) {
 //	mapPanel.strokeStyle("blue");
 	for (var i=0; i< clusters.length; i++) {
 	    clusters[i].addPVMark(mapPanel, z); 
-	    
-/*	    var clustMark = subPanel.add(pv.Mark);
-	    clustMark = mark;
-	    alert(mark.type+" "+clustMark.type+"\n"+
-		  mark.parent+" "+clustMark.parent);
-*/
 	}
-//	.data(clusters)
-//	.add(pv.Dot).extend(function(d) {return d.getPVMark();});
-
-/*
-	.add(pv.Dot)
-	.left(function(d) {return d.getPxX()})
-	.top(function(d) {return d.getPxY()})
-
-	.strokeStyle(function(d) {return z(d.markers_[0].z)})
-	.fillStyle(function(d) {return z(d.markers_[0].z).alpha(.7)})
-	.radius(function(d) {return d.getPxSize() / 2;})
-	.anchor("center").add(pv.Label)
-	.textStyle("white")
-//	.text(function(x, d) {return d.markers_[0].z});
-	.text(function(x, d) {return d.getSize()+" "+d.getComposition()});
-*/
 	
 	mapPanel.root.render();
 /*

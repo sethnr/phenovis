@@ -42,8 +42,9 @@ Cluster.prototype.addPVMark = function(panel, z) {
     }
 
     if(comp.length == 1) {
-	mark = panel.add(pv.Dot)
-	.left(this.getPxX())
+	mark = panel.add(pv.Dot);
+
+	mark.left(this.getPxX())
 	.top(this.getPxY())
 	.strokeStyle(z(comp[0].z))
 	.fillStyle(z(comp[0].z).alpha(0.8))
@@ -55,21 +56,12 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.text(this.getSize()+" "+comp[0].z);
     }
     else {
-	
-	mark = panel.add(pv.Panel)
+	mark = panel.add(pv.Panel);
+	mark
 	.left(this.getPxX())
 	.top(this.getPxY())
-	//.width(this.getPxSize())
-	//.height(this.getPxSize())
-	//.fillStyle("blue")
-
-;
-	
-/*	mark.add(pv.Label)
-	.textStyle("white")
-	.text(this.getSize()+" mixed ("+comp.length+" strains)");
-*/
-	var wedge = mark.add(pv.Wedge).cursor("pointer")
+	.add(pv.Wedge)
+	.cursor("pointer")
 	.data(comp)
 	.angle(function(d) {return (d.points.length / markers.length * 2 * Math.PI)})
 	.left(0)
@@ -81,22 +73,6 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.textStyle("white").cursor("pointer")
 	.text(function(d) {return d.points.length+" "+d.z});
 
-	
-//	wedge.angle(function(d) {return d /100 * 2 * Math.PI})
-//	.fillStyle(function(d) {return z(d)})
-//	wedge.title(d);	
-
-/*	mark = panel.add(pv.Dot)    
-	    .left(this.getPxX())
-	    .top(this.getPxY())
-	    .strokeStyle("red")
-	    .fillStyle(z("mixed").alpha(0.4))
-	    .radius(this.getPxSize() / 2)
-	    .anchor("center")
-	    .add(pv.Label)
-	    .textStyle("white")
-	    .text(this.getSize()+" ("+comp.length+" strains)");
-*/
     }
 
     mark.
@@ -104,6 +80,34 @@ Cluster.prototype.addPVMark = function(panel, z) {
     event("click", function() {c.clustPop()})
     ;
     
+    
+    popM = panel
+//    .anchor("center")
+    .add(pv.Panel)
+    .left(this.getPxX())
+    .top(this.getPxY())
+    .width(function(d) {console.log("adding PopM"); return 100;}).height(100)
+    .fillStyle(pv.color("#fff").alpha(0.5))
+    .strokeStyle("grey");
+//    add(pv.Dot)
+//    .data(markers)
+
+    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
+
+    popM
+//    .data(markers)
+    .add(pv.Dot)
+   .data(markers)
+ 
+    .radius(function(d) {console.log("adding dot"); return 5;})
+    .left(function(d) {console.log(this.parent.index+" "+this.index); return ((this.index + 1) % 10) * 15})
+    .top(function(d) {return Math.floor(((this.index) / 10) + 1) * 15})
+    .fillStyle(function(d) {return z(d.z)})
+    .strokeStyle(function(d) {return z(d.z)})
+    ; 
+    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
+
+    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);    
     return mark;
 }
 
