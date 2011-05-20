@@ -22,17 +22,70 @@ function Cluster(geoplot) {
  * @param {google.maps.Marker} marker The marker to check.
  * @return {boolean} True if the marker is already added.
  */
-Cluster.prototype.getPVMark = function() {
-    var mark = new pv.Dot;
+Cluster.prototype.addPVMark = function(panel, z) {
+    var mark;
+    var markers = this.getMarkers();
+    var comp = this.getComposition();
 
-    mark.left(this.getPxX())
-    .top(this.getPxY())
-    .strokeStyle("blue")
-    .fillStyle("blue")
-    .radius(this.getPxSize() / 2)
-    .anchor("center").add(pv.Label)
-    .textStyle("white")
-    .text(this.getSize()+" "+this.getComposition());
+    if(comp.length == 1) {
+	mark = panel.add(pv.Dot)    
+	    .left(this.getPxX())
+	    .top(this.getPxY())
+	    .strokeStyle(z(comp[0].z))
+	    .fillStyle(z(comp[0].z).alpha(0.4))
+	    .radius(this.getPxSize() / 2)
+	    .anchor("center")
+	    .add(pv.Label)
+	    .textStyle("white")
+	    .text(this.getSize()+" "+comp[0].z);
+    }
+    else {
+	
+	mark = panel.add(pv.Panel)
+	.left(this.getPxX())
+	.top(this.getPxY())
+	//.width(this.getPxSize())
+	//.height(this.getPxSize())
+	//.fillStyle("blue")
+
+;
+	
+/*	mark.add(pv.Label)
+	.textStyle("white")
+	.text(this.getSize()+" mixed ("+comp.length+" strains)");
+*/
+	var wedge = mark.add(pv.Wedge)
+	.data(comp)
+	.angle(function(d) {/*
+			      alert(d+" "+this.type+":"+this.index+" "+this.parent.type+":"+this.parent.index); */
+return (d.points.length / markers.length * 2 * Math.PI)})
+	.left(0)
+//	.title(function(d) {return d.z})
+	.fillStyle(function(d) {alert(d+" "+d.z); return z(d.z).alpha(0.8)})
+	.strokeStyle("gray")
+	.top(0)
+	.outerRadius(this.getPxSize()/2)
+	.anchor("center").add(pv.Label).textAngle(0)
+	.textStyle("white")
+	.text(function(d) {return d.points.length+" "+d.z});
+	
+//	wedge.angle(function(d) {return d /100 * 2 * Math.PI})
+//	.fillStyle(function(d) {return z(d)})
+//	wedge.title(d);	
+
+/*	mark = panel.add(pv.Dot)    
+	    .left(this.getPxX())
+	    .top(this.getPxY())
+	    .strokeStyle("red")
+	    .fillStyle(z("mixed").alpha(0.4))
+	    .radius(this.getPxSize() / 2)
+	    .anchor("center")
+	    .add(pv.Label)
+	    .textStyle("white")
+	    .text(this.getSize()+" ("+comp.length+" strains)");
+*/
+    }
+
     return mark;
 }
 
@@ -135,9 +188,12 @@ Cluster.prototype.getSize = function() {
  * @return {string} single z val, or 'mixed'
  */
 Cluster.prototype.getComposition = function() {
-    var zs = this.markers_.collect(function(d) {return d.z}).uniq();
-    if(zs.length ==1) {return zs[0];}
-    else {return "mixed";}
+    var markers = this.markers_;
+    var zs = markers.collect(function(d) {return d.z}).uniq();
+    zs = zs.map(function(d) {return {z: d, points: markers.findAll(function(e) {return e.z == d;})}});
+    return zs;
+//    if(zs.length ==1) {return zs[0];}
+//    else {return "mixed";}
 };
 
 
