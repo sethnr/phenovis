@@ -36,7 +36,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	    .fillStyle(pv.color("#aaa").alpha(0.5))
 	    .radius(10)
 	    .cursor("pointer")
-	    .event("click", function() {c.clustPop()})
+	    .event("click", function() {c.clustPopUp()})
     ;
 
     }
@@ -49,7 +49,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.strokeStyle(z(comp[0].z))
 	.fillStyle(z(comp[0].z).alpha(0.8))
 	.radius(this.getPxSize() / 2)
-	.cursor("pointer").event("click", function() {c.clustPop()})
+	.cursor("pointer").event("click", function() {c.clustPopUp()})
 	.anchor("center")
 	.add(pv.Label)
 	.textStyle("white")
@@ -77,7 +77,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 
     mark.
     cursor("pointer").
-    event("click", function() {c.clustPop()})
+    event("click", function() {c.clustPopUp()})
     ;
     
 
@@ -88,7 +88,13 @@ Cluster.prototype.addPVMark = function(panel, z) {
     .top(this.getPxY())
     .width(100).height(100)
     .fillStyle(pv.color("#fff").alpha(0.5))
-    .strokeStyle("grey");
+    .strokeStyle("grey")
+    //.visible(false)
+    ;
+    popM
+    .def("active", false)
+    .visible(function() {console.log("creating popup: "+this.type+" "+this.active()); return this.active()})
+    ;
 
     //add dots
     popM.add(pv.Dot)
@@ -102,7 +108,8 @@ Cluster.prototype.addPVMark = function(panel, z) {
     ; 
 //    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
 
-//    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);    
+//    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);   
+    this.popup_ = popM;
     return mark;
 }
 
@@ -111,8 +118,14 @@ Cluster.prototype.addPVMark = function(panel, z) {
  *
  * @return {boolean} True if the marker is already added.
  */
-Cluster.prototype.clustPop = function() {
-    console.log("clusterPop");
+Cluster.prototype.clustPopUp = function() {
+    var popM = this.popup_;
+    console.log("clusterPop " + popM.active()+" "+popM.visible());
+    //    var popM = this.popup_;
+    //    popM.visible(true);
+    popM.def("active","true");
+    popM.active(true);
+    console.log("clusterPop " + popM.active()+" "+popM.visible());
 }
 
 
