@@ -27,8 +27,8 @@ Cluster.prototype.addPVMark = function(panel, z) {
     var c = this;
     var markers = this.getMarkers();
     var comp = this.getComposition();
+    var dotSize = 15;
     if(this.getPxSize() < 20) {
-//	alert(markers.length+" "+this.getPxSize());
 	var bgMark = panel.add(pv.Dot)
 	    .left(this.getPxX())
 	    .top(this.getPxY())
@@ -36,7 +36,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	    .fillStyle(pv.color("#aaa").alpha(0.5))
 	    .radius(10)
 	    .cursor("pointer")
-	    .event("click", function() {c.clustPopUp()})
+//	    .event("click", function() {c.popUp()})
     ;
 
     }
@@ -49,7 +49,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.strokeStyle(z(comp[0].z))
 	.fillStyle(z(comp[0].z).alpha(0.8))
 	.radius(this.getPxSize() / 2)
-	.cursor("pointer").event("click", function() {c.clustPopUp()})
+	.cursor("pointer").event("click", function() {c.popUp()})
 	.anchor("center")
 	.add(pv.Label)
 	.textStyle("white")
@@ -64,10 +64,8 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.cursor("pointer")
 	.data(comp)
 	.angle(function(d) {return (d.points.length / markers.length * 2 * Math.PI)})
-	.left(0)
 	.fillStyle(function(d) {return z(d.z).alpha(0.8)})
 	.strokeStyle("gray")
-	.top(0)
 	.outerRadius(this.getPxSize()/2)
 	.anchor("center").add(pv.Label).textAngle(0)
 	.textStyle("white").cursor("pointer")
@@ -77,16 +75,13 @@ Cluster.prototype.addPVMark = function(panel, z) {
 
     mark.
     cursor("pointer").
-    event("click", function() {c.clustPopUp()})
+    event("click", function() {c.popUp()})
     ;
     
 
-    var dotSize = 15;
-    console.log(c.getSize()+" => "+Math.ceil(Math.sqrt(c.getSize())));
     var sqrt = Math.ceil(Math.sqrt(c.getSize()));
 
     //add popup panel
-//    this.popup_ = new pv.Panel;
     this.popup_ = panel
     .add(pv.Panel);
     this.popup_.left(this.getPxX())
@@ -109,13 +104,12 @@ Cluster.prototype.addPVMark = function(panel, z) {
 //    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);   
 //    this.popup_ = popM;
 
-    this.popup_
-    .def("active", null);
-    this.popup_.active(true);
-    this.popup_.visible(function() {console.log(this.type+" "+c.popup_.active()+" "); return this.active()})
+   this.popup_
+    .def("active", false)
+    .visible(function() {/*console.log(c.popup_.active()+" "+this.active()); */return this.active()})
     ;
 
-    console.log(this.popup_);
+//    console.log(this.popup_);
     return mark;
 }
 
@@ -124,14 +118,26 @@ Cluster.prototype.addPVMark = function(panel, z) {
  *
  * @return {boolean} True if the marker is already added.
  */
-Cluster.prototype.clustPopUp = function() {
-    var popM = this.popup_;
-    console.log("clusterPop " + popM.active()+" "+popM.visible());
-    //    var popM = this.popup_;
-    //    popM.visible(true);
-//    popM.def("active","true");
-    popM.active(true);
-    console.log("clusterPop " + popM.active()+" "+popM.visible());
+Cluster.prototype.popUp = function() {
+//    var popM = this.popup_;
+//    this.popup_.active(false);
+//    console.log("pop: " + this.popup_+" - "+this.popup_.active()+" \tvis:"+this.popup_.visible());
+    this.geoplot_.closePops();
+    this.popup_.active(true).render();
+    //this.popup_.visible(true);
+//    console.log("pop: " + this.popup_+" - "+this.popup_.active()+" \tvis:"+this.popup_.visible());
+//    this.popup_.render();
+}
+/**
+ * spawn popup menu for cluster.
+ *
+ * @return {boolean} True if the marker is already added.
+ */
+Cluster.prototype.popDown = function() {
+//    var popM = this.popup_;
+//    console.log("pop: " + this.popup_.active()+" "+this.popup_.visible());
+    this.popup_.active(false).render();
+//    console.log("pop: " + this.popup_.active()+" "+this.popup_.visible());
 }
 
 

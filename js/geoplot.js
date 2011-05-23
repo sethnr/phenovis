@@ -1,3 +1,4 @@
+
 function getDataHash_map (xstring, ystring, zstring) {
   var valHash = new Hash();
   valHash.set("X",findVals(xstring, data));
@@ -31,7 +32,7 @@ function geoplot(posHash, mapDiv) {
 
 	this.setMap(map);
 	this.panel_ = new pv.Panel().overflow("visible");
-
+	this.clusters_ = [];
 //	this.z = pv.Colors.category10();
 	return this;
     }
@@ -86,12 +87,7 @@ function geoplot(posHash, mapDiv) {
 	var projection = this.getProjection();
 	
 	var cSet = new ClusterSet(this, this.mapPoints);
-	var clusters = cSet.getClusters();
-
-//	for(var ci=0; ci<clusters.length && ci < 6; ci++) {
-//	    alert(ci+" "+clusters[ci].markers_.length);
-//	}
-	
+	this.clusters_ = cSet.getClusters();
 
 	var pixels = this.mapPoints.map(function(d) {
 		var ll = new google.maps.LatLng(d.x, d.y);
@@ -112,51 +108,27 @@ function geoplot(posHash, mapDiv) {
 
 	var mapPanel = new pv.Panel();
 
-/*
-	mapPanel
-	.canvas(c)
-	.left(-x.min)
-	.top(-y.min)
-	.add(pv.Panel)
-	.data(this.mapPoints)	
-	.add(pv.Dot)
-	.left(function() {return pixels[this.parent.index].x})
-	.top(function() {return pixels[this.parent.index].y})
-	.strokeStyle(function(d) {return z(d.z)})
-	.fillStyle(function(d) {return z(d.z).alpha(.2)})
-	.size(140)
-	.anchor("center").add(pv.Label)
-	.textStyle("white")
-	.text(function(x, d) {return d.z});
-*/
-
-
 	var subPanel = mapPanel
 	.canvas(c)
 	.left(-x.min)
 	.top(-y.min)
 	.add(pv.Panel)
-;
-
-//	mapPanel.strokeStyle("blue");
-	for (var i=0; i< clusters.length; i++) {
-	    clusters[i].addPVMark(mapPanel, z); 
+	;
+	for (var i=0; i< this.clusters_.length; i++) {
+	    this.clusters_[i].addPVMark(mapPanel, z); 
 	}
 	
 	mapPanel.root.render();
-/*
-alert(myData.root.children.length+"\n"+
-      myData.root.children[0].children.length+"\n"+
-      myData.root.children[0].children[0].children+"\n"+
-      myData.root.children[0].children[1].children+"\n"
-
-    );
-*/	
-	
-//	return mapPanel;
 	mapPanel.root.render();
 
     }
+
+    Canvas.prototype.closePops = function() {
+	for (var i=0; i< this.clusters_.length; i++) {
+	    this.clusters_[i].popDown(); 
+	}
+    }
+
     //add the map
     var myOptions = {
 //    zoom: 7,
