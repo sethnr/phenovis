@@ -8,7 +8,7 @@
 function Cluster(geoplot) {
   this.geoplot_ = geoplot;
   this.map_ = geoplot.getMap();
-  this.sizeFactor_ = 3;
+  this.markerSize_;
   this.center_ = null;
   this.markers_ = [];
   this.bounds_ = null;
@@ -26,7 +26,8 @@ Cluster.prototype.addPVMark = function(panel, z) {
     var c = this;
     var markers = this.getMarkers();
     var comp = this.getComposition();
-    var dotSize = 15;
+    var dotSize = this.markerSize_;
+
     if(this.getPxSize() < 20) {
 	var bgMark = panel.add(pv.Dot)
 	    .left(this.getPxX())
@@ -46,7 +47,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.top(this.getPxY())
 	.strokeStyle(z(comp[0].z))
 	.fillStyle(z(comp[0].z).alpha(0.8))
-	.radius(this.getPxSize() / 2)
+	.radius(this.getPxSize()/2)
 	.cursor("pointer").event("click", function() {c.popUp()})
 	.anchor("center")
 	.add(pv.Label)
@@ -67,7 +68,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.outerRadius(this.getPxSize()/2)
 	.anchor("center").add(pv.Label).textAngle(0)
 	.textStyle("white").cursor("pointer")
-	.text(function(d) {return d.points.length+" "+d.z});
+	.text(function(d) {return d.points.length /*+" "+d.z*/});
 
     }
 
@@ -78,21 +79,22 @@ Cluster.prototype.addPVMark = function(panel, z) {
     
 
     var sqrt = Math.ceil(Math.sqrt(c.getSize()));
+//    console.log(sqrt+" x "+dotSize);
 
     //add popup panel
     this.popup_ = panel
     .add(pv.Panel);
     this.popup_.left(this.getPxX())
     .top(this.getPxY())
-    .width((sqrt+1)*dotSize)
-    .height((sqrt+1)*dotSize)
+    .width((sqrt+1)*dotSize*3)
+    .height((sqrt+1)*dotSize*3)
     .fillStyle(pv.color("#fff").alpha(0.5))
     .strokeStyle("grey")
     .add(pv.Dot)
     .data(markers)
-    .radius(5)
-    .left(function(d) {return ((this.index % sqrt)+1) * dotSize})
-    .top(function(d) {return Math.floor(((this.index) / sqrt) + 1) * dotSize})
+    .radius(dotSize)
+    .left(function(d) {return ((this.index % sqrt)+1) * dotSize * 3 })
+    .top(function(d) {return Math.floor(((this.index) / sqrt) + 1) * dotSize * 3})
     .fillStyle(function(d) {return z(d.z)})
     .strokeStyle(function(d) {return z(d.z)})
     .cursor("pointer").event("click",function(d) {console.log("clicked "+d.z);})
@@ -295,11 +297,21 @@ Cluster.prototype.calculateBounds_ = function() {
 };
 
 Cluster.prototype.getPxSize = function() {
-      return this.markers_.length * this.sizeFactor_;
+//    console.log(this.markers_.length+" "+Math.sqrt((this.markers_.length / Math.PI)));
+    var area = Math.sqrt((this.markers_.length / Math.PI));
+    var sizeFactor = this.markerSize_ / (Math.sqrt(1/Math.PI));
+//    console.log(this.markers_.length+": "+area+" x "+sizeFactor+" = "+(area*sizeFactor));
+    return area * sizeFactor * 2;
+    //return this.markers_.length * this.sizeFactor_;
+
 }
 
 Cluster.prototype.getSize = function() {
       return this.markers_.length;
+}
+
+Cluster.prototype.setMarkerSize = function(size) {
+      this.markerSize_ = size;
 }
 
 /**
@@ -337,7 +349,7 @@ function ClusterSet(geoplot, data) {
   this.geoplot_ = geoplot;
   this.data_ = data;
   this.map_ = geoplot.getMap();
-  this.sizeFactor_ = 5;
+  this.markerSize_ = 5;
 
   this.clusters_ = [];
   this.makeClusters_();
@@ -386,6 +398,7 @@ ClusterSet.prototype.addMarker = function(marker) {
   }
   if(clustersAdded < 1) {
       var cluster = new Cluster(this.geoplot_);
+      cluster.setMarkerSize(this.markerSize_)
       cluster.addMarker(marker);
       this.clusters_.push(cluster);
   }
