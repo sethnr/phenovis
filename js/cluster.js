@@ -81,27 +81,25 @@ Cluster.prototype.addPVMark = function(panel, z) {
     ;
     
 
+    var dotSize = 15;
+    console.log(c.getSize()+" => "+Math.ceil(Math.sqrt(c.getSize())));
+    var sqrt = Math.ceil(Math.sqrt(c.getSize()));
+
     //add popup panel
-    popM = panel
-    .add(pv.Panel)
-    .left(this.getPxX())
+//    this.popup_ = new pv.Panel;
+    this.popup_ = panel
+    .add(pv.Panel);
+    this.popup_.left(this.getPxX())
     .top(this.getPxY())
-    .width(100).height(100)
+    .width((sqrt+1)*dotSize)
+    .height((sqrt+1)*dotSize)
     .fillStyle(pv.color("#fff").alpha(0.5))
     .strokeStyle("grey")
-    //.visible(false)
-    ;
-    popM
-    .def("active", false)
-    .visible(function() {console.log("creating popup: "+this.type+" "+this.active()); return this.active()})
-    ;
-
-    //add dots
-    popM.add(pv.Dot)
+    .add(pv.Dot)
     .data(markers)
     .radius(5)
-    .left(function(d) {/*console.log(this.parent.index+" "+this.index);*/ return ((this.index % 10)+1) * 15})
-    .top(function(d) {return Math.floor(((this.index) / 10) + 1) * 15})
+    .left(function(d) {return ((this.index % sqrt)+1) * dotSize})
+    .top(function(d) {return Math.floor(((this.index) / sqrt) + 1) * dotSize})
     .fillStyle(function(d) {return z(d.z)})
     .strokeStyle(function(d) {return z(d.z)})
     .cursor("pointer").event("click",function(d) {console.log("clicked "+d.z);})
@@ -109,7 +107,15 @@ Cluster.prototype.addPVMark = function(panel, z) {
 //    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
 
 //    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);   
-    this.popup_ = popM;
+//    this.popup_ = popM;
+
+    this.popup_
+    .def("active", null);
+    this.popup_.active(true);
+    this.popup_.visible(function() {console.log(this.type+" "+c.popup_.active()+" "); return this.active()})
+    ;
+
+    console.log(this.popup_);
     return mark;
 }
 
@@ -123,7 +129,7 @@ Cluster.prototype.clustPopUp = function() {
     console.log("clusterPop " + popM.active()+" "+popM.visible());
     //    var popM = this.popup_;
     //    popM.visible(true);
-    popM.def("active","true");
+//    popM.def("active","true");
     popM.active(true);
     console.log("clusterPop " + popM.active()+" "+popM.visible());
 }
