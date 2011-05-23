@@ -29,7 +29,7 @@ function geoplot(posHash, mapDiv) {
 
 	var bounds = this.getBounds(mapPoints, 0.05);
 	map.fitBounds(bounds);
-
+//	google.maps.event.addListener(map, 'click', this.closePops());
 	this.setMap(map);
 	this.panel_ = new pv.Panel().overflow("visible");
 	this.clusters_ = [];
@@ -43,11 +43,13 @@ function geoplot(posHash, mapDiv) {
 	this.canvas = document.createElement("div");
 	this.canvas.setAttribute("class", "canvas");
 	this.canvas.style.position="absolute";
+	var c = this;
+	google.maps.event.addListener(this.getMap(), 'click', function(){c.closePops()});
 	
 	var pane = this.getPanes().overlayMouseTarget;
 	
 	pane.appendChild(this.canvas);
-
+	
     }
     
     Canvas.prototype.getMap = function(){
@@ -120,8 +122,11 @@ function geoplot(posHash, mapDiv) {
     }
 
     Canvas.prototype.closePops = function() {
-	for (var i=0; i< this.clusters_.length; i++) {
-	    this.clusters_[i].popDown(); 
+// console.log(this.clusters_);
+	if(this.clusters_) {
+	    for (var i=0; i< this.clusters_.length; i++) {
+		this.clusters_[i].popDown(); 
+	    }
 	}
     }
 
