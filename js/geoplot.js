@@ -33,7 +33,7 @@ function geoplot(posHash, mapDiv) {
 	this.setMap(map);
 	this.panel_ = new pv.Panel().overflow("visible");
 	this.clusters_ = [];
-//	this.z = pv.Colors.category10();
+	this.z = pv.Colors.category10();
 	return this;
     }
     
@@ -82,7 +82,7 @@ function geoplot(posHash, mapDiv) {
 	var m = this.map;
 	var c = this.canvas;
 	var r = 200;
-	var z = pv.Colors.category10();
+	var z = this.z;
 	
 	var projection = this.getProjection();
 	
@@ -95,8 +95,6 @@ function geoplot(posHash, mapDiv) {
 	    });	    
 	
 	function x(p) {return p.x}; function y(p) {return p.y};
-	
-	// pv.max(pixels, y) + r;
 	
 	var x = { min: pv.min(pixels, x) - r, max: pv.max(pixels, x) + r };
 	var y = { min: pv.min(pixels, y) - r, max: pv.max(pixels, y) + r };
@@ -119,8 +117,6 @@ function geoplot(posHash, mapDiv) {
 	}
 	
 	mapPanel.root.render();
-	mapPanel.root.render();
-
     }
 
     Canvas.prototype.closePops = function() {
@@ -131,11 +127,8 @@ function geoplot(posHash, mapDiv) {
 
     //add the map
     var myOptions = {
-//    zoom: 7,
-//    center: new google.maps.LatLng(12.8, -8.05),
     mapTypeId: google.maps.MapTypeId.TERRAIN
     };
-//    var map = new google.maps.Map(document.getElementById("fig"),
     var map = new google.maps.Map(mapDiv,
 				  myOptions);
     //add the overlay canvas
@@ -147,4 +140,3 @@ function geoplot(posHash, mapDiv) {
     
 }
     
-//geoplot.prototype

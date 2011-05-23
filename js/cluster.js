@@ -1,10 +1,9 @@
 /**
  * A cluster that contains markers.
  *
- * @param {MarkerClusterer} markerClusterer The markerclusterer that this
- *     cluster is associated with.
+ * @param {geoplot} the geoplot that this
+ *     cluster will be placed on.
  * @constructor
- * @ignore
  */
 function Cluster(geoplot) {
   this.geoplot_ = geoplot;
@@ -17,10 +16,10 @@ function Cluster(geoplot) {
 }
 
 /**
- * Determins if a marker is already added to the cluster.
- *
- * @param {google.maps.Marker} marker The marker to check.
- * @return {boolean} True if the marker is already added.
+ * add protovis visualisation for this cluster - dependent on size and composition
+ * defaults to pie chart
+ * @param {panel, z} pv.Panel to which will be added + z-scale for colouring.
+ * @return {pv.Mark} the mark class
  */
 Cluster.prototype.addPVMark = function(panel, z) {
     var mark;
@@ -35,8 +34,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	    .strokeStyle(pv.color("#aaa").alpha(0.4))
 	    .fillStyle(pv.color("#aaa").alpha(0.5))
 	    .radius(10)
-	    .cursor("pointer")
-//	    .event("click", function() {c.popUp()})
+	    .cursor("pointer").event("click", function() {c.popUp()})
     ;
 
     }
@@ -99,52 +97,34 @@ Cluster.prototype.addPVMark = function(panel, z) {
     .strokeStyle(function(d) {return z(d.z)})
     .cursor("pointer").event("click",function(d) {console.log("clicked "+d.z);})
     ; 
-//    console.log("popM="+popM.data.length+"\tmark="+mark.data.length);
-
-//    console.log(mark+" "+mark.type+"\t"+popM+" "+popM.type);   
-//    this.popup_ = popM;
 
    this.popup_
     .def("active", false)
-    .visible(function() {/*console.log(c.popup_.active()+" "+this.active()); */return this.active()})
+    .visible(function() {return this.active()})
     ;
 
-//    console.log(this.popup_);
     return mark;
 }
 
 /**
  * spawn popup menu for cluster.
- *
- * @return {boolean} True if the marker is already added.
  */
 Cluster.prototype.popUp = function() {
-//    var popM = this.popup_;
-//    this.popup_.active(false);
-//    console.log("pop: " + this.popup_+" - "+this.popup_.active()+" \tvis:"+this.popup_.visible());
     this.geoplot_.closePops();
     this.popup_.active(true).render();
-    //this.popup_.visible(true);
-//    console.log("pop: " + this.popup_+" - "+this.popup_.active()+" \tvis:"+this.popup_.visible());
-//    this.popup_.render();
 }
 /**
- * spawn popup menu for cluster.
- *
- * @return {boolean} True if the marker is already added.
+ * close popup menu for cluster
  */
 Cluster.prototype.popDown = function() {
-//    var popM = this.popup_;
-//    console.log("pop: " + this.popup_.active()+" "+this.popup_.visible());
     this.popup_.active(false).render();
-//    console.log("pop: " + this.popup_.active()+" "+this.popup_.visible());
 }
 
 
 /**
  * Determins if a marker is already added to the cluster.
  *
- * @param {google.maps.Marker} marker The marker to check.
+ * @param {dataObject} marker The marker to check.
  * @return {boolean} True if the marker is already added.
  */
 Cluster.prototype.isMarkerAlreadyAdded = function(marker) {
@@ -165,7 +145,7 @@ Cluster.prototype.isMarkerAlreadyAdded = function(marker) {
 /**
  * Add a marker to the cluster.
  *
- * @param {google.maps.Marker} marker The marker to add.
+ * @param {dataMarker} marker The marker to add.
  * @return {boolean} True if the marker was added.
  */
 Cluster.prototype.addMarker = function(marker) {
@@ -194,9 +174,9 @@ Cluster.prototype.addMarker = function(marker) {
 
 
 /**
- * Returns the marker clusterer that the cluster is associated with.
+ * Returns the geoplot that the cluster is associated with.
  *
- * @return {MarkerClusterer} The associated marker clusterer.
+ * @return {geoplot} The associated marker clusterer.
  */
 Cluster.prototype.getGeoplot = function() {
   return this.geoplot_;
@@ -228,7 +208,7 @@ Cluster.prototype.remove = function() {
 /**
  * Returns the composition of the cluster
  *
- * @return {string} single z val, or 'mixed'
+ * @return {array of objects {z: [distinct] z-value; obj: data objects}}'
  */
 Cluster.prototype.getComposition = function() {
     var markers = this.markers_;
@@ -241,9 +221,9 @@ Cluster.prototype.getComposition = function() {
 
 
 /**
- * Returns the center of the cluster.
+ * Returns all markers.
  *
- * @return {Array.<google.maps.Marker>} The cluster center.
+ * @return {[]} array of data objects.
  */
 Cluster.prototype.getMarkers = function() {
   return this.markers_;
@@ -394,12 +374,10 @@ ClusterSet.prototype.makeClusters_ = function() {
  */
 ClusterSet.prototype.addMarker = function(marker) {
   var pos = new google.maps.LatLng(marker.x, marker.y);
-//  alert(marker.x+" "+marker.y+"\t"+pos);
 
   clustersAdded = 0;
   for(var i=0; i< this.clusters_.length; i++) {
 	var cluster = this.clusters_[i];
-	// alert(i+" "+cluster.isPosInClusterBounds(pos));
 	if(cluster.isPosInClusterBounds(pos)) {
 	    cluster.addMarker(marker);
 	    clustersAdded++;
