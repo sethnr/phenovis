@@ -1,12 +1,16 @@
 <project name="phenovis" default="cat" basedir=".">
     <property name="version" value="0.01"/>
     <property name="src.dir" value="${basedir}/js"/>
+    <property name="build.js.lib" value="${basedir}/jslib"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="build.lib" value="${basedir}/lib"/>
     <property name="gmodnatdiv.ar.dir" value="${basedir}/../public/javascripts/"/>
 
     <path id="all.js">
 	<fileset dir="${src.dir}">
+	    <include name="**/*.js"/>
+	</fileset>
+	<fileset dir="${build.js.lib}">
 	    <include name="**/*.js"/>
 	</fileset>
     </path>
@@ -22,6 +26,9 @@
     <target name="cat" depends="clean, init" description="Concatenate">
 	<concat destfile="build/phenovis-${version}.js">
 	<fileset dir="${src.dir}">
+	    <include name="**/*.js"/>
+	</fileset>
+	<fileset dir="${build.js.lib}">
 	    <include name="**/*.js"/>
 	</fileset>
  	    
