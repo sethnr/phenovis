@@ -349,15 +349,17 @@ function groupedBarChart(data, div,args) {
 
 function getScale(scaleVals, sz, type) {
     var s;
-    var min = scaleVals.min();
-    var max = scaleVals.max();
+    var min = scaleVals.collect(function(d) {return Number(d)}).min();
+    if(min > 0) {min=0;}
+    var max = scaleVals.collect(function(d) {return Number(d)}).max();
+    if(max <=0) {max = 0;}
 
     if(type=="ordinal") {
 	s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);}
     else if (type=="linear") {
-	s = pv.Scale.linear(0, scaleVals.collect(function(d) {return Number(d)}).max()).range(0, sz).nice();}
+	s = pv.Scale.linear(min, max).range(0, sz).nice();}
     else if (type=="log" || type=="logarythmic") {
-	s = pv.Scale.log(0, scaleVals.collect(function(d) {return Number(d)}).max()).range(0, sz).nice();}
+	s = pv.Scale.log(min, max).range(0, sz).nice();}
     else {
 	s = guessScale(scaleVals,sz);
     }
@@ -370,9 +372,14 @@ function getScale(scaleVals, sz, type) {
  */
 function guessScale(scaleVals, sz) {
     var numreg=/(^\d+$)|(^\d+\.\d+$)/;
+    var min = scaleVals.collect(function(d) {return Number(d)}).min();
+    if(min > 0) {min=0;}
+    var max = scaleVals.collect(function(d) {return Number(d)}).max();
+    if(max <=0) {max = 0;}
+
     if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))}))
 	s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);
     else
-	s = pv.Scale.linear(0, scaleVals.collect(function(d) {return Number(d)}).max()).range(0, sz).nice();    
+	s = pv.Scale.linear(min, max).range(0, sz).nice();    
     return s;
 }
