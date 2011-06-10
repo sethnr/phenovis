@@ -1,3 +1,4 @@
+/*
 function getDataHash_jsp (json, est, xst, yst, zst) {
 
   function getVal (json, est, ost, vst) {
@@ -33,8 +34,8 @@ function getDataHash_jsp (json, est, xst, yst, zst) {
   dataHash.sortBy(function(d) {return Number(d.y)});
   return dataHash;
 }
-
-
+*/
+/*
 function getDataHash_map (data,xstring, ystring, zstring) {
   var valHash = new Hash();
   valHash.set("X",findVals(xstring, data));
@@ -48,13 +49,12 @@ function getDataHash_map (data,xstring, ystring, zstring) {
       return {x: xval,  
 	     y: yval, 
 	     z: zval
-	      /* obj: jsonobject */
 	      }},valHash);
   
   dataHash.sortBy(function(d) {return Number(d.y)});
   return dataHash;
 }
-
+*/
 
 function geoplot(posHash, mapDiv) {
 

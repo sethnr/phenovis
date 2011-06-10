@@ -97,7 +97,11 @@ Cluster.prototype.addPVMark = function(panel, z) {
     .top(function(d) {return Math.floor(((this.index) / sqrt) + 1) * dotSize * 3})
     .fillStyle(function(d) {return z(d.z)})
     .strokeStyle(function(d) {return z(d.z)})
-    .cursor("pointer").event("click",function(d) {console.log("clicked "+d.z);})
+    .cursor("pointer")
+    .event("mouseover", function(d) {self.status = "sample  "+d.o.id;})
+    .event("mouseout", function() {self.status = "";})
+    .event("click", function(d) {self.location = "http://funcgen.vectorbase.org/popgenDev/sample/?id="+d.o.id})
+//    event("click",function(d) {console.log("clicked "+Object.toJSON(d.o.id));})
     ; 
 
    this.popup_

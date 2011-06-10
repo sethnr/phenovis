@@ -26,12 +26,19 @@
     <target name="cat" depends="clean, init" description="Concatenate">
 	<concat destfile="build/phenovis-${version}.js">
 	<fileset dir="${src.dir}">
+	    <include name="**/copyright_hd.txt"/>
+	</fileset>
+	<fileset dir="${src.dir}">
 	    <include name="**/*.js"/>
 	</fileset>
-	<fileset dir="${build.js.lib}">
+	<fileset dir="${src.dir}">
+	    <include name="**/copyright_ft.txt"/>
+	</fileset>
+
+ 	<fileset dir="${build.js.lib}">
 	    <include name="**/*.js"/>
 	</fileset>
- 	    
+	    
 	</concat>
     </target>
 
