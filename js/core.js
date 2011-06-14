@@ -4,8 +4,9 @@
  * @params type - the graph type to call 
  *         dataHash - data hash to call
  *         div - div to put it in
+ *         args - additional args for function (optional)
  */
-function callPlot(type, dataHash, div) {
+function callPlot(type, dataHash, div, args) {
     var functions = {
 	"map":"geoplot",
 	"geoplot":"geoplot",
@@ -14,7 +15,7 @@ function callPlot(type, dataHash, div) {
 	"groupbar":"groupedBarChart",
 	"matrix":"frequencyMatrix"
     };
-    eval(functions[type]+"(dataHash, div)");
+    eval(functions[type]+"(dataHash, div, args)");
 
 }
 
