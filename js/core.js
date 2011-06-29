@@ -1,3 +1,7 @@
+/** set defaults if no config */
+// if(!config.ROOT) (config.ROOT = document.location.hostname;)
+
+
 /**
  * passes values through to actual graph calls, based on text 
  * description in DB. Nothing else. (to prevent CSS attacks)

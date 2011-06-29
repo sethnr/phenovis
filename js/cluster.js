@@ -100,7 +100,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
     .cursor("pointer")
     .event("mouseover", function(d) {self.status = "sample  "+d.o.id;})
     .event("mouseout", function() {self.status = "";})
-    .event("click", function(d) {self.location = "http://funcgen.vectorbase.org/popgenDev/sample/?id="+d.o.id})
+    .event("click", function(d) {self.location = config.ROOT+"/sample/?id="+d.o.id})
 //    event("click",function(d) {console.log("clicked "+Object.toJSON(d.o.id));})
     ; 
 
