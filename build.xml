@@ -5,6 +5,8 @@
     <property name="build.dir" value="${basedir}/build"/>
     <property name="build.lib" value="${basedir}/lib"/>
     <property name="gmodnatdiv.ar.dir" value="${basedir}/../public/javascripts/"/>
+    <property name="vbfrontend.src.dir" value="${basedir}/../site-sources/src/js"/>
+    <property name="vbfrontend.trn.dir" value="${basedir}/../turnkey-site/htdocs/js"/>
 
     <path id="all.js">
 	<fileset dir="${src.dir}">
@@ -56,5 +58,17 @@
 	    </fileset>
         </copy>
     </target>
-    
+
+    <target name="vb_frontend" depends="cat" description="cp files to expected vb frontend directory">
+	<copy todir="${vbfrontend.src.dir}">
+            <fileset dir="${build.dir}">
+	        <include name="*.js"/>
+	    </fileset>
+        </copy>
+	<copy todir="${vbfrontend.trn.dir}">
+            <fileset dir="${build.dir}">
+	        <include name="*.js"/>
+	    </fileset>
+        </copy>
+    </target>
 </project>
