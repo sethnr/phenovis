@@ -408,7 +408,7 @@ function addAxis(panel, scaleVals, scale, anchor, type) {
 //    console.log(type);
 
     if(type=="ordinal") {
-	rule = panel.add(pv.Rule).data(scaleVals.uniq())
+	rule = panel.add(pv.Rule).data(scaleVals.uniq().sort())
 	    .strokeStyle(function(d) {return d ? "#eee" : "#000"})
 	if(anchor == "bottom") {
 	    rule.left(scale)

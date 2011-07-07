@@ -6,6 +6,7 @@ function geoplot(posHash, mapDiv) {
 	this.mapPoints = mapPoints;
 	this.map = map;
 
+	
 	var bounds = this.getBounds(mapPoints, 0.05);
 	map.fitBounds(bounds);
 //	google.maps.event.addListener(map, 'click', this.closePops());
@@ -24,6 +25,15 @@ function geoplot(posHash, mapDiv) {
 	this.canvas.style.position="absolute";
 	var c = this;
 	google.maps.event.addListener(this.getMap(), 'click', function(){c.closePops()});
+
+	
+	//add legend...
+/* CODE NOT YET WORKING */
+	var zvals = this.mapPoints.collect(function(d) {return d.z});
+	legend = new pv.Panel;
+	legend.strokeStyle('green').canvas(this.canvas);
+	addLegend(legend, zvals, this.z);
+
 	
 	var pane = this.getPanes().overlayMouseTarget;
 	
@@ -31,6 +41,7 @@ function geoplot(posHash, mapDiv) {
 	
     }
     
+
     Canvas.prototype.getMap = function(){
 	return this.map;
     }
@@ -87,6 +98,8 @@ function geoplot(posHash, mapDiv) {
 
 	var mapPanel = new pv.Panel();
 
+	mapPanel.strokeStyle('red');
+
 	var subPanel = mapPanel
 	.canvas(c)
 	.left(-x.min)
@@ -96,7 +109,7 @@ function geoplot(posHash, mapDiv) {
 	for (var i=0; i< this.clusters_.length; i++) {
 	    this.clusters_[i].addPVMark(mapPanel, z); 
 	}
-w	
+	
 	mapPanel.root.render();
     }
 
@@ -117,7 +130,7 @@ w
 				  myOptions);
     //add the overlay canvas
     var geoverlay = new Canvas(posHash, map);
-
+    
 
     
     return geoverlay;
