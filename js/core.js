@@ -64,15 +64,57 @@ function getDataHash_jsp (json, est, xst, yst, zst) {
   dataHash.sortBy(function(d) {return Number(d.y)});
   return dataHash;
 }
+/** add legend to any panel */
+function addLegend(panel, zvals, zscale) {
+//    console.log("adding legend to " +panel);
+    panel.add(pv.Dot)
+	.data(zvals.uniq().sort())
+	.right(10)
+	.top(function(d) {return this.index * 12 + 10})
+	.fillStyle(function(d) {return zscale(d)})
+	.strokeStyle(null)
+        .anchor("left").add(pv.Label)
+	.text(function(d) {return d});
+}
+
+function estLegendSize(vals) {
+    console.log(vals.max(function(z) {return z.length}));
+    console.log(vals.max(function(z) {return Number(z.length)}));
+    console.log(vals.max(function(z) {return Number(z.length)}) * 5);
+    return (vals.max(function(z) {return Number(z.length)}) * 5) + 10;
+}
+
+/** get width by any method */
+function getDivWidth(div) {
+    var width;
+    width = div.style.width || div.offsetWidth || div.getWidth();
+    width = new String(width).replace("px","");
+//    console.log(width);
+    return width;
+}
+
+/** get height by any method */
+function getDivHeight(div) {
+    var height;
+    height = div.style.height || div.offsetHeight || div.getHeight();
+    height = new String(height).replace("px","");
+//    console.log(height);
+    return height;
+}
 
 
 
+
+
+
+/** DEPRECATED */
 /* traverse (any) json object to find nodes of a particular type */
 function nodeFromArray(objects, catchString) {
     for (var i = 0; i < objects.length; i++) {
 	if (eval('objects[i].'+catchString)) { return objects[i];}
     }
 }
+
 
 /* nd_json utility methods */
 
@@ -81,6 +123,8 @@ function nodeFromArray(objects, catchString) {
    the method of selection should return a single node, if not the first matching node will be returned.
    if no selection method is provided, should be a single value, NOT array
    the array will be built with one value per nd_experiment object (to be changed to sample object when data allows)  */ 
+
+/** DEPRECATED */
 function findVals (valString, data) {
     //   alert(valString)
   var objectPath = valString.split("->");
@@ -102,7 +146,7 @@ function findVals (valString, data) {
 
 /* make 3-dim data structure for plotting */
 /* to be replaced with getDataHash_map method (i.e. separate position grid from value grid - only used foor scatter plot jittering */
-
+/** DEPRECATED */
 function getDataHash (x, xvals, y, yvals, z, zvals) {
   var valHash = new Hash();
   valHash.set("X",xvals);

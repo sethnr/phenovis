@@ -5,19 +5,12 @@
  */
 function dotplot(data, div, args) {
 //    var w = 500; var h=400;
-    var w = div.style.width.replace("px","") || 500;
-    var h = div.style.height.replace("px","") || 500;
+    var w = getDivWidth(div);
+    var h = getDivHeight(div);
+//    var w = div.style.width.replace("px","") || 500;
+//    var h = div.style.height.replace("px","") || 500;
 
-/*
-    function getScale(scaleVals, sz) {
-	var numreg=/(^\d+$)|(^\d+\.\d+$)/;
-	if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))}))
-	    s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);
-	else
-	    s = pv.Scale.linear(0, scaleVals.collect(function(d) {return Number(d)}).max()).range(0, sz).nice();
-	return s;
-    }
-*/    
+   
     function setXAxis(scaleVals, scale, vis) {
 	var numreg=/(^\d+$)|(^\d+\.\d+$)/;
 	// nb - find way to check scale type from scale?
@@ -61,7 +54,7 @@ function dotplot(data, div, args) {
 
   var x = getScale(xvals, w);
   var y = getScale(yvals, h);
-  var z = pv.Colors.category10(); //, s = x.range().band / 2;
+  var z = pv.Colors.category20(); //, s = x.range().band / 2;
 
   var dataMap = getDataHash(x, xvals, y, yvals, z, zvals);
 
@@ -70,10 +63,12 @@ function dotplot(data, div, args) {
   var yvals = data.collect(function(d) {return d.y});
   var zvals = data.collect(function(d) {return d.z});
   var xType; var yType;
+  
+  var legendSize = estLegendSize(zvals);
   if(args) { xType = args.xscale; yType = args.yscale;}
-  var x = getScale(xvals, w, xType);
+  var x = getScale(xvals, (w-legendSize), xType);
   var y = getScale(yvals, h, yType);
-  var z = pv.Colors.category10(); //, s = x.range().band / 2;
+  var z = pv.Colors.category20(); //, s = x.range().band / 2;
   data = addPosnsToHash(data,x,y);
 
 
@@ -86,24 +81,37 @@ function dotplot(data, div, args) {
     .right(10)
     .top(5);
 
-  setXAxis(xvals, x, vis);
-  setYAxis(yvals, y, vis);
+  legendPanel = vis.add(pv.Panel)
+      .right(0)
+      .width(legendSize)
+;
 
+  dataPanel = vis.add(pv.Panel)
+      .width(w-legendSize)
+      .left(0)
+      //  .data(data)
+      ;
+
+//  setXAxis(xvals, x, dataPanel);
+  addAxis(dataPanel, xvals, x, "bottom", xType);
+//  setYAxis(yvals, y, dataPanel);
+  addAxis(dataPanel, yvals, y, "left", yType);
+  
   
   if(args && args.jitter=="true") {
       data = jitter(data, 10);
   }
 
   /* The dot plot! */
-  panel = vis.add(pv.Panel)
-    .data(data)
-    ;
-  
-  dots = panel.add(pv.Dot)
+  dots = dataPanel.add(pv.Dot)
+      .data(data)
     .bottom(function(d) {return d.ypos})
     .left(function(d) {return d.xpos})
     .strokeStyle(function(d) {return z(d.z)})
     ;
+  
+  addLegend(legendPanel, zvals, z);
+
   vis.render();
   return vis;   
 }
@@ -218,22 +226,14 @@ function jitter(data, space) {
  * @param dataHash / div
  */
 function groupedBarChart(data, div,args) {
-    var w = div.style.width.replace("px","") || 500;
-    var h = div.style.height.replace("px","") || 500;
+    var w = getDivWidth(div);
+    var h = getDivHeight(div);
+
+//    var w = div.style.width.replace("px","") || 500;
+//    var h = div.style.height.replace("px","") || 500;
 //    var args = args.evalJSON();
 
 //    console.log(Object.toJSON(args));
-
-/*
-  function guessScale(scaleVals, sz) {
-    var numreg=/(^\d+$)|(^\d+\.\d+$)/;
-    if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))}))
-      s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);
-    else
-      s = pv.Scale.linear(0, scaleVals.collect(function(d) {return Number(d)}).max()).range(0, sz).nice();    
-    return s;
-  }
-*/  
 
 
   function setXAxis(scaleVals, scale, vis) {
@@ -245,14 +245,7 @@ function groupedBarChart(data, div,args) {
   }
 
   function setYAxis(scaleVals, scale, vis) {
-/*
-    var numreg=/(^\d+$)|(^\d+\.\d+$)/;
-    if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) { // ordinal axis and ticks.
-      vis.add(pv.Rule).data(scaleVals.uniq())
-	.strokeStyle(function(d) {return d ? "#eee" : "#000"})
-	.bottom(scale).anchor("left").add(pv.Label);
-    }
-*/
+
 //    else { // linear axis and ticks.
       vis.add(pv.Rule).data(scale.ticks())
 	.strokeStyle(function(d) {return d ? "#eee" : "#000"})
@@ -265,18 +258,6 @@ function groupedBarChart(data, div,args) {
 
 
   /* create data */
-/*  var xvals = findVals(xstring, data);
-  var yvals = findVals(ystring, data);
-  var zvals = findVals(zstring, data);
-
-  var n = xvals.length;
-
-  var x = pv.Scale.ordinal(pv.range(n)).splitBanded(0, w, 9/10);
-  var y = getScale(yvals, h);
-  var z = pv.Colors.category19(); //, s = x.range().band / 2;
-
-  var dataMap = getDataHash(x, xvals, y, yvals, z, zvals);
-*/
 
   var xvals = data.collect(function(d) {return d.x});
   var yvals = data.collect(function(d) {return d.y});
@@ -288,7 +269,7 @@ function groupedBarChart(data, div,args) {
  if(args) { xType = args.xscale; yType = args.yscale || yType;}
   var x = pv.Scale.ordinal(pv.range(n)).splitBanded(0, w, 9/10);
   var y = getScale(yvals, h, yType);
-  var z = pv.Colors.category10(); //, s = x.range().band / 2;
+  var z = pv.Colors.category20(); //, s = x.range().band / 2;
 
 
   /* Make root panel. */
@@ -358,7 +339,7 @@ function getScale(scaleVals, sz, type) {
     if(max <=0) {max = 0;}
 
     if(type=="ordinal") {
-	s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);}
+	s = pv.Scale.ordinal(scaleVals.uniq().sort()).split(0, sz);}
     else if (type=="linear") {
 	s = pv.Scale.linear(min, max).range(0, sz).nice();}
     else if (type=="log" || type=="logarythmic") {
@@ -381,8 +362,73 @@ function guessScale(scaleVals, sz) {
     if(max <=0) {max = 0;}
 
     if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))}))
-	s = pv.Scale.ordinal(scaleVals.uniq()).split(0, sz);
+	s = pv.Scale.ordinal(scaleVals.uniq().sort()).split(0, sz);
     else
 	s = pv.Scale.linear(min, max).range(0, sz).nice();    
     return s;
+}
+
+function addAxis(panel, scaleVals, scale, anchor, type) {
+    var rule;
+    // if no type guess based on numbers
+    console.log(type);
+    if(!type) {
+	var numreg=/(^\d+$)|(^\d+\.\d+$)/;   
+	if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) {
+	    type = "ordinal";
+	}
+	else {
+	    type = "linear";
+	} 
+    }
+    console.log(type);
+
+    if(type=="ordinal") {
+	rule = panel.add(pv.Rule).data(scaleVals.uniq())
+	    .strokeStyle(function(d) {return d ? "#eee" : "#000"})
+//	    .left(scale).anchor(anchor)
+//	    .add(pv.Label);
+	if(anchor == "bottom") {
+	    rule.left(scale).anchor(anchor).add(pv.Label);
+	}
+	else if (anchor == "left") {
+	    rule.bottom(scale).anchor(anchor).add(pv.Label);
+	}
+    }
+    else if (type=="linear") {
+	rule = panel.add(pv.Rule).data(scale.ticks())
+	    .strokeStyle(function(d) {return d ? "#eee" : "#000"})
+//	    .left(scale).anchor(anchor)
+//	    .add(pv.Label).text(scale.tickFormat);
+	if(anchor == "bottom") {
+	    rule.left(scale)
+	        .anchor(anchor)
+	        .add(pv.Label)
+	        .text(scale.tickFormat);
+	}
+	else if (anchor == "left") {
+	    rule.bottom(scale)
+		.anchor(anchor)
+		.add(pv.Label)
+		.text(scale.tickFormat);
+	}
+    }
+/*    else {
+	guessAxis(panel,scaleVals,scale,anchor);
+    }
+*/  
+}
+
+
+/**
+ * if no scale is given, guess based on presence / absence of numbers
+ */
+function guessAxis(panel, scaleVals, scale, anchor) {
+    var numreg=/(^\d+$)|(^\d+\.\d+$)/;   
+    if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) {
+	addAxis(panel, scaleVals, scale, anchor, "linear");
+    }
+    else {
+	addAxis(panel, scaleVals, scale, anchor, "ordinal");	
+    }
 }

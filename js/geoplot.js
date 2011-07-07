@@ -1,60 +1,3 @@
-/*
-function getDataHash_jsp (json, est, xst, yst, zst) {
-
-  function getVal (json, est, ost, vst) {
-      var estHash = est.split('.');
-      var ostHash = ost.split('[');
-      for (var i = estHash.length; i> 1; i--) {
-	  var esst = estHash.slice(0,i).join(".");
-//	  console.log(esst+" "+vst.indexOf(esst));
-	  if(vst.indexOf(esst) >= 0) {
-	      var osst = ostHash.slice(0,i).join("[");
-	      
-	      var vpth = vst.replace(esst,osst);
-	      var vobj = jsonPath(json,vpth);
-//	      console.log(vpth+"\t"+vobj);
-	      if(vobj.length==1) {return vobj[0];}
-	      else {return vobj};
-	  }
-      }
-      return undefined;
-  }
-
-  var paths = jsonPath(json, est,{resultType:"PATH"});
-  console.log(est+" "+paths.length);
-
-  var dataHash = paths.map(function(d,i) {
-      var retHash =  {x: getVal(json, est, d,xst),  
-		      y: getVal(json, est, d,yst), 
-		      z: getVal(json, est, d,zst),
-		      o: getVal(json, est, d,est)
-      };
-      return retHash;});
-  
-  dataHash.sortBy(function(d) {return Number(d.y)});
-  return dataHash;
-}
-*/
-/*
-function getDataHash_map (data,xstring, ystring, zstring) {
-  var valHash = new Hash();
-  valHash.set("X",findVals(xstring, data));
-  valHash.set("Y",findVals(ystring, data));
-  valHash.set("Z",findVals(zstring, data));
-  
-  var dataHash = data.stocks.map(function(d,i) {
-      var xval = this.get("X")[i];
-      var yval = this.get("Y")[i];
-      var zval = this.get("Z")[i];
-      return {x: xval,  
-	     y: yval, 
-	     z: zval
-	      }},valHash);
-  
-  dataHash.sortBy(function(d) {return Number(d.y)});
-  return dataHash;
-}
-*/
 
 function geoplot(posHash, mapDiv) {
 
@@ -69,7 +12,7 @@ function geoplot(posHash, mapDiv) {
 	this.setMap(map);
 	this.panel_ = new pv.Panel().overflow("visible");
 	this.clusters_ = [];
-	this.z = pv.Colors.category10();
+	this.z = pv.Colors.category20();
 	return this;
     }
     
@@ -153,7 +96,7 @@ function geoplot(posHash, mapDiv) {
 	for (var i=0; i< this.clusters_.length; i++) {
 	    this.clusters_[i].addPVMark(mapPanel, z); 
 	}
-	
+w	
 	mapPanel.root.render();
     }
 
