@@ -78,10 +78,8 @@ function addLegend(panel, zvals, zscale) {
 }
 
 function estLegendSize(vals) {
-    console.log(vals.max(function(z) {return z.length}));
-    console.log(vals.max(function(z) {return Number(z.length)}));
-    console.log(vals.max(function(z) {return Number(z.length)}) * 5);
-    return (vals.max(function(z) {return Number(z.length)}) * 5) + 10;
+    var dotSize = 20; var cSize = 6;
+    return (vals.max(function(z) {return Number(z.length)}) * cSize) + dotSize;
 }
 
 /** get width by any method */

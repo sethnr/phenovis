@@ -10,7 +10,7 @@ function dotplot(data, div, args) {
 //    var w = div.style.width.replace("px","") || 500;
 //    var h = div.style.height.replace("px","") || 500;
 
-   
+/*   
     function setXAxis(scaleVals, scale, vis) {
 	var numreg=/(^\d+$)|(^\d+\.\d+$)/;
 	// nb - find way to check scale type from scale?
@@ -44,7 +44,7 @@ function dotplot(data, div, args) {
     return vis;
   }
 
-
+*/
 
   /* create data */
 /*
@@ -89,7 +89,6 @@ function dotplot(data, div, args) {
   dataPanel = vis.add(pv.Panel)
       .width(w-legendSize)
       .left(0)
-      //  .data(data)
       ;
 
 //  setXAxis(xvals, x, dataPanel);
@@ -267,7 +266,10 @@ function groupedBarChart(data, div,args) {
   var xType; var yType="linear";
 
  if(args) { xType = args.xscale; yType = args.yscale || yType;}
-  var x = pv.Scale.ordinal(pv.range(n)).splitBanded(0, w, 9/10);
+  var legendSize = estLegendSize(zvals);
+
+
+  var x = pv.Scale.ordinal(pv.range(n)).splitBanded(0, w - legendSize, 9/10);
   var y = getScale(yvals, h, yType);
   var z = pv.Colors.category20(); //, s = x.range().band / 2;
 
@@ -281,28 +283,47 @@ function groupedBarChart(data, div,args) {
     .right(10)
     .top(5);
 
+  legendPanel = vis.add(pv.Panel)
+      .right(0)
+      .width(legendSize);
+  addLegend(legendPanel, zvals, z);
 
-  setYAxis(yvals, y, vis);
 
+  dataPanel = vis.add(pv.Panel)
+      .width(w-legendSize)
+      .left(0);
+
+//  setYAxis(yvals, y, vis);
+  addAxis(dataPanel, yvals, y, "left", yType);
+ 
+  
   var left = 0;
-  var bw = w / xvals.length;
   var uxvals = xvals.uniq().sort();
+  var dataPanelSize = w-legendSize;
+//  var gapsSize = uxvals.length * catMargin;
+  var bw = dataPanelSize / xvals.length;
+  
+  
 
   for (var i = 0; i<uxvals.length; i++) {
     //add new panel of width (newHash.length * colwidth) 
     
     dataMapSub = data.findAll(function (d) {return d.x == uxvals[i];});
 
-    var catdiv = vis.add(pv.Panel)
+    var catdiv = dataPanel.add(pv.Panel)
 	.width(dataMapSub.length * bw)
 	.left(left)
 	.width(bw * dataMapSub.length)
 	;
+
     catdiv
-	.anchor("bottom").add(pv.Label)
-	.textMargin(25)
+	.anchor("bottom")
+	.add(pv.Label)
+//	.textMargin(function() {console.log(this.parent.index+" "+(i % 2)); if (i % 2) {return 10} else {return 30};})
+	.textMargin((i%2 * 10)+10)
 	.textBaseline("top")
 	.text(uxvals[i])
+//	.textAngle(Math.PI/3)	
 	;
     left = left + (bw * dataMapSub.length);
 
@@ -313,19 +334,22 @@ function groupedBarChart(data, div,args) {
 	.width(x.range().band)
 	.bottom(0)
 	.height(function(d) {return y(d.y)})
-	.fillStyle(function(d) {return z(d.x)})
+	.fillStyle(function(d) {return z(d.z)})
 	;
  
     bar.anchor("top").add(pv.Label)
 	.textStyle("white")
 	.text(function(d) {return d.y;});
     
-    bar.anchor("bottom").add(pv.Label)
+/*
+  bar.anchor("bottom").add(pv.Label)
 	.textMargin(5)
 	.textStyle(function(d) {return d ? "#aaa" : "#000"})
 	.textBaseline("top")
-	.text(function(d) {return d.z});
- 
+	.text(function(d) {return d.z})
+//	.textAngle(Math.PI/3)
+	;
+*/
       }
   vis.render();  
   return vis;   
@@ -371,7 +395,7 @@ function guessScale(scaleVals, sz) {
 function addAxis(panel, scaleVals, scale, anchor, type) {
     var rule;
     // if no type guess based on numbers
-    console.log(type);
+//    console.log(type);
     if(!type) {
 	var numreg=/(^\d+$)|(^\d+\.\d+$)/;   
 	if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) {
@@ -381,18 +405,24 @@ function addAxis(panel, scaleVals, scale, anchor, type) {
 	    type = "linear";
 	} 
     }
-    console.log(type);
+//    console.log(type);
 
     if(type=="ordinal") {
 	rule = panel.add(pv.Rule).data(scaleVals.uniq())
 	    .strokeStyle(function(d) {return d ? "#eee" : "#000"})
-//	    .left(scale).anchor(anchor)
-//	    .add(pv.Label);
 	if(anchor == "bottom") {
-	    rule.left(scale).anchor(anchor).add(pv.Label);
+	    rule.left(scale)
+	    .anchor(anchor).add(pv.Label)
+   // why the fuck doesn't this work??!!
+	    .textMargin(((this.index % 2) * 10)+10)
+	    .textBaseline("top")
+	    .text(function(d) {return d})
+	    ;
 	}
 	else if (anchor == "left") {
-	    rule.bottom(scale).anchor(anchor).add(pv.Label);
+	    rule.bottom(scale).anchor(anchor).add(pv.Label)
+//		.text(function(d) {console.log(this.index +" "+d); return d})
+;
 	}
     }
     else if (type=="linear") {
