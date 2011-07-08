@@ -98,7 +98,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
     .fillStyle(function(d) {return z(d.z)})
     .strokeStyle(function(d) {return z(d.z)})
     .cursor("pointer")
-    .event("mouseover", function(d) {self.status = "sample  "+d.o.id;})
+    .event("mouseover", function(d) {/*console.log(d.o.id); */self.status = ("sample  "+d.o.id);})
     .event("mouseout", function() {self.status = "";})
     .event("click", function(d) {self.location = config.ROOT+"/sample/?id="+d.o.id})
 //    event("click",function(d) {console.log("clicked "+Object.toJSON(d.o.id));})
@@ -197,7 +197,7 @@ Cluster.prototype.getGeoplot = function() {
 Cluster.prototype.getBounds = function() {
     if (!this.bounds_) {
 	this.calculateBounds_(); }
-    return this.bounds_();
+    return this.bounds_;
 };
 
 
@@ -326,7 +326,19 @@ Cluster.prototype.setMarkerSize = function(size) {
  */
 Cluster.prototype.isPosInClusterBounds = function(pos) {
   var contains = this.bounds_.contains(pos);
-//  alert(this.bounds_+" contains "+pos+" = "+contains);
+//  console.log(this.bounds_+" contains "+pos+" = "+contains);
+  return contains;
+};
+
+/**
+ * Determines if a cluster lies partially or wholly in the clusters bounds.
+ *
+ * @param {google.maps.LatLon} marker The marker to check.
+ * @return {boolean} True if the marker lies in the bounds.
+ */
+Cluster.prototype.doesClusterOverlap = function(clust) {
+  var contains = this.bounds_.intersects(clust.bounds_);
+//  console.log(this.bounds_+" contains "+pos+" = "+contains);
   return contains;
 };
 
@@ -352,6 +364,7 @@ Cluster.prototype.getMap = function() {
 function ClusterSet(geoplot, data) {
   this.geoplot_ = geoplot;
   this.data_ = data;
+//  this.data.sort(function(d) {return d.y});
   this.map_ = geoplot.getMap();
   this.markerSize_ = 5;
 
@@ -379,6 +392,39 @@ ClusterSet.prototype.makeClusters_ = function() {
 	// alert(datum+", "+this.data_.length);
 	this.addMarker(datum);
     }
+
+/*
+    for (var i =0; i<this.clusters_.length; i++) {
+	var cluster = this.clusters_[i]
+	console.log(i+" "+cluster.getSize()+"\n"+cluster.getBounds()+" "+cluster.getCenter());
+    }
+*/
+    this.checkClusterOLs();
+
+}
+
+ClusterSet.prototype.checkClusterOLs = function() {
+    for (var i =0; i<this.clusters_.length; i++) {
+	for (var j=0; j<this.clusters_.length; j++) {
+	    var clI = this.clusters_[i];
+	    var clJ = this.clusters_[j];
+	    if((j != i) && clI.doesClusterOverlap(clJ)) {
+		console.log(clI.getSize()+" overlaps "+clJ.getSize());
+		
+		// only do in most efficient direction 
+		// (if not leave till overlap is found in other direction)
+		if(clI.getSize() > clJ.getSize()) {
+		    this.clusters_.splice(j,1);
+		    var mergedMarkers = clJ.getMarkers();
+		    for(var k = 0; k< mergedMarkers.length; k++) {
+			clI.addMarker(mergedMarkers[k]);
+			}
+		    j=0; i=0;
+		}
+	    }
+	}	
+    }
+    
 }
 
 
