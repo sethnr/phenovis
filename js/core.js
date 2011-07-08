@@ -88,7 +88,7 @@ function estLegendHeight(vals) {
 }
 
 function estLegendWidth(vals) {
-    var dotSize = 20; var cSize = 7;
+    var dotSize = 30; var cSize = 6;
     return (vals.max(function(z) {return Number(z.length)}) * cSize) + dotSize;
 }
 

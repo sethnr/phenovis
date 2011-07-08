@@ -414,10 +414,8 @@ function addAxis(panel, scaleVals, scale, anchor, type) {
 	if(anchor == "bottom") {
 	    rule.left(scale)
 	    .anchor(anchor).add(pv.Label)
-   // why the fuck doesn't this work??!!
-	    .textMargin(((this.index % 2) * 10)+10)
+	    .textMargin(function(d) {return ((this.index % 2) * 10)+10})
 	    .textBaseline("top")
-	    .text(function(d) {return d})
 	    ;
 	}
 	else if (anchor == "left") {
