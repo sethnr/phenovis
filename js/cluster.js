@@ -409,7 +409,7 @@ ClusterSet.prototype.checkClusterOLs = function() {
 	    var clI = this.clusters_[i];
 	    var clJ = this.clusters_[j];
 	    if((j != i) && clI.doesClusterOverlap(clJ)) {
-		console.log(clI.getSize()+" overlaps "+clJ.getSize());
+//		console.log(clI.getSize()+" overlaps "+clJ.getSize());
 		
 		// only do in most efficient direction 
 		// (if not leave till overlap is found in other direction)
