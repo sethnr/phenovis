@@ -313,6 +313,7 @@ function groupedBarChart(data, div,args) {
     var catdiv = dataPanel.add(pv.Panel)
 	.width(dataMapSub.length * bw)
 	.left(left)
+	.strokeStyle('#e7e7e7')
 	.width(bw * dataMapSub.length)
 	;
 

@@ -75,10 +75,20 @@ function addLegend(panel, zvals, zscale) {
 	.strokeStyle(null)
         .anchor("left").add(pv.Label)
 	.text(function(d) {return d});
+    return panel;
 }
 
 function estLegendSize(vals) {
-    var dotSize = 20; var cSize = 6;
+    return estLegendWidth(vals);
+}
+
+function estLegendHeight(vals) {
+    var cSize = 12;
+    return (vals.uniq().length * cSize)+10;
+}
+
+function estLegendWidth(vals) {
+    var dotSize = 20; var cSize = 7;
     return (vals.max(function(z) {return Number(z.length)}) * cSize) + dotSize;
 }
 

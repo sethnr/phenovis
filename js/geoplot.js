@@ -1,5 +1,18 @@
 
-function geoplot(posHash, mapDiv) {
+function geoplot(posHash, div) {
+
+    function Legend(posHash, ldiv, zvals, z) {	
+	ldiv.setAttribute("class", "legend");
+	lpanel = new pv.Panel;
+	lpanel
+//	    .strokeStyle('green')
+	    .fillStyle(pv.color("#fff").alpha(0.7))
+	    .canvas(ldiv);
+	addLegend(lpanel, zvals, z);
+	lpanel.render();
+
+    }
+
 
 
     function Canvas(mapPoints, map){
@@ -25,19 +38,23 @@ function geoplot(posHash, mapDiv) {
 	this.canvas.style.position="absolute";
 	var c = this;
 	google.maps.event.addListener(this.getMap(), 'click', function(){c.closePops()});
-
 	
-	//add legend...
-/* CODE NOT YET WORKING */
+	
+/* CODE TO OVERLAY DIRECTLY ON MAP NOT WORKING */
+/*
+	this.legend = document.createElement("div");
+	this.legend.style.position="absolute";
 	var zvals = this.mapPoints.collect(function(d) {return d.z});
-	legend = new pv.Panel;
-	legend.strokeStyle('green').canvas(this.canvas);
-	addLegend(legend, zvals, this.z);
 
+	lpanel = new pv.Panel;	
+	this.lpanel = lpanel;
+	lpanel.strokeStyle('green').canvas(this.legend);
+	addLegend(lpanel, zvals, this.z);
+*/	
 	
-	var pane = this.getPanes().overlayMouseTarget;
-	
-	pane.appendChild(this.canvas);
+	var panes = this.getPanes();
+//	panes.floatPane.appendChild(this.legend);
+	panes.overlayMouseTarget.appendChild(this.canvas);
 	
     }
     
@@ -98,23 +115,24 @@ function geoplot(posHash, mapDiv) {
 
 	var mapPanel = new pv.Panel();
 
-	mapPanel.strokeStyle('red');
+//	mapPanel.strokeStyle('red');
 
-	var subPanel = mapPanel
+	// var subPanel = 
+	mapPanel
 	.canvas(c)
 	.left(-x.min)
 	.top(-y.min)
-	.add(pv.Panel)
+//	.add(pv.Panel)
 	;
 	for (var i=0; i< this.clusters_.length; i++) {
 	    this.clusters_[i].addPVMark(mapPanel, z); 
 	}
 	
 	mapPanel.root.render();
+	
     }
 
     Canvas.prototype.closePops = function() {
-// console.log(this.clusters_);
 	if(this.clusters_) {
 	    for (var i=0; i< this.clusters_.length; i++) {
 		this.clusters_[i].popDown(); 
@@ -123,16 +141,24 @@ function geoplot(posHash, mapDiv) {
     }
 
     //add the map
-    var myOptions = {
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-    };
-    var map = new google.maps.Map(mapDiv,
-				  myOptions);
+    var zvals = posHash.collect(function(d) {return d.z});
+
+    var lDiv = document.createElement("div");
+    lDiv.style.width = estLegendWidth(zvals);
+    lDiv.style.height = estLegendHeight(zvals);
+
+    lDiv.style.right = 10;
+    lDiv.style.bottom = 30;
+    lDiv.style.borderRadius = 5;
+    lDiv.style.position = "absolute";
+    lDiv.style.zIndex = "99"; 
+
+    var map = new google.maps.Map(div, { mapTypeId: google.maps.MapTypeId.TERRAIN}  );
     //add the overlay canvas
     var geoverlay = new Canvas(posHash, map);
-    
-
-    
+    div.appendChild(lDiv);
+    var legend = new Legend(posHash, lDiv, zvals, geoverlay.z);
+   
     return geoverlay;
     
 }
