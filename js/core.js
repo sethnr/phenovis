@@ -110,6 +110,23 @@ function getDivHeight(div) {
     return height;
 }
 
+/** get all xys from names */
+function geocodeLocationNames (dataHash) {
+    var locations = jsonPath(dataHash, "$..x");
+}
+
+/** get xy from village/country/whatever name */
+function geocodeFromName(name, callback) {
+    var geocoder = new google.maps.Geocoder();
+//    Geocoder.geocode({"address": name },callback);
+    geocoder.geocode({"address": name}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+	  alert("RESULTS"+Object.toJSON(results));
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+}
 
 
 
