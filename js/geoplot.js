@@ -37,7 +37,7 @@ function geoplot(posHash, div) {
 	this.canvas.setAttribute("class", "canvas");
 	this.canvas.style.position="absolute";
 	var c = this;
-	google.maps.event.addListener(this.getMap(), 'click', function(){c.closePops()});
+	google.maps.event.addListener(this.getMap(), 'click', function(){console.log("clicked outside "); c.closePops()});
 	
 	
 /* CODE TO OVERLAY DIRECTLY ON MAP NOT WORKING */
@@ -133,11 +133,13 @@ function geoplot(posHash, div) {
     }
 
     Canvas.prototype.closePops = function() {
+	console.log("popping down");
 	if(this.clusters_) {
 	    for (var i=0; i< this.clusters_.length; i++) {
 		this.clusters_[i].popDown(); 
 	    }
 	}
+	
     }
 
     //add the map

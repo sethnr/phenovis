@@ -116,8 +116,16 @@ Cluster.prototype.addPVMark = function(panel, z) {
  * spawn popup menu for cluster.
  */
 Cluster.prototype.popUp = function() {
+    
     this.geoplot_.closePops();
+    console.log("popping up");
     this.popup_.active(true).render();
+
+    
+
+//    console.log(this.popup_.active());  
+//    this.geoplot_.draw();   
+    
 }
 /**
  * close popup menu for cluster
