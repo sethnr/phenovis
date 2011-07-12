@@ -110,25 +110,56 @@ function getDivHeight(div) {
     return height;
 }
 
-/** get all xys from names */
-function geocodeLocationNames (dataHash) {
-    var locations = jsonPath(dataHash, "$..x");
+
+/*
+ * inplace edit the passed array of hashes, expecting
+ * [ { x: ..., y: ..., z: ..., e: ... }, ... ]
+ *
+ * if x == y and not numeric then do a google geocode lookup
+ *
+ */
+
+function geocodeLocationNames(dataHash, callback) {
+	var geoCache = new Object();
+	var geocoder = new google.maps.Geocoder();
+
+	nameToCoords(0);
+
+	function nameToCoords(i) {
+		if (i < dataHash.size()) {
+			var h = dataHash[i];
+			if (h.x === h.y && parseFloat(h.x) != h.x) {
+				var name = h.x;
+				if (geoCache[name]) {
+					h.x = geoCache[name].x;
+					h.y = geoCache[name].y;
+					//console.log("used cache for "+name);
+					nameToCoords(i+1);
+				} else {
+					console.log("looking lat/long for up "+name);
+					geocoder.geocode({"address": name}, function(results, status) {
+							if (status == google.maps.GeocoderStatus.OK) {
+								var x = jsonPath(results, "*..location.Ja");
+								var y = jsonPath(results, "*..location.Ka");
+								if (x && y) {
+									x = x.first(); y = y.first();
+									geoCache[name] = { x: x, y: y };
+									h.x = x; h.y = y;
+								}
+							} else {
+								h.x = h.y = 0;
+								console.log("google.maps.Geocoder error = "+status);
+							}
+							// throttle the geocode calls
+							setTimeout(function(){ nameToCoords(i+1); }, 750);
+						});
+				}
+			}
+		} else {
+			callback();
+		}
+	}
 }
-
-/** get xy from village/country/whatever name */
-function geocodeFromName(name, callback) {
-    var geocoder = new google.maps.Geocoder();
-//    Geocoder.geocode({"address": name },callback);
-    geocoder.geocode({"address": name}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-	  alert("RESULTS"+Object.toJSON(results));
-      } else {
-        alert("Geocode was not successful for the following reason: " + status);
-      }
-    });
-}
-
-
 
 
 
