@@ -154,7 +154,7 @@ function geocodeLocationNames(dataHash, callback) {
 							setTimeout(function(){ nameToCoords(i+1); }, 750);
 						});
 				}
-			}
+			} else { nameToCoords(i+1);} // make recursive call for next 
 		} else {
 			callback();
 		}

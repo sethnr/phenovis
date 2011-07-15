@@ -7,69 +7,18 @@ function dotplot(data, div, args) {
 //    var w = 500; var h=400;
     var w = getDivWidth(div);
     var h = getDivHeight(div);
-//    var w = div.style.width.replace("px","") || 500;
-//    var h = div.style.height.replace("px","") || 500;
 
-/*   
-    function setXAxis(scaleVals, scale, vis) {
-	var numreg=/(^\d+$)|(^\d+\.\d+$)/;
-	// nb - find way to check scale type from scale?
-	if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) { // ordinal axis and ticks.
-	    vis.add(pv.Rule).data(scaleVals.uniq())
-		.strokeStyle(function(d) {return d ? "#eee" : "#000"})
-		.left(scale).anchor("bottom").add(pv.Label);
-	}
-	else {  // linear axis and ticks.
-	    vis.add(pv.Rule).data(scale.ticks())
-		.strokeStyle(function(d) {return d ? "#eee" : "#000"})
-		.left(scale).anchor("bottom")
-		.add(pv.Label).text(scale.tickFormat);
-	}  
-	return vis;
-  }
+    var xvals = data.collect(function(d) {return d.x});
+    var yvals = data.collect(function(d) {return d.y});
+    var zvals = data.collect(function(d) {return d.z});
+    var xType; var yType;
     
-  function setYAxis(scaleVals, scale, vis) {
-    var numreg=/(^\d+$)|(^\d+\.\d+$)/;
-    if(scaleVals.uniq().any(function(d) {return (!numreg.test(d))})) { // ordinal axis and ticks.
-      vis.add(pv.Rule).data(scaleVals.uniq())
-	.strokeStyle(function(d) {return d ? "#eee" : "#000"})
-	.bottom(scale).anchor("left").add(pv.Label);
-    }
-    else { // linear axis and ticks.
-      vis.add(pv.Rule).data(scale.ticks())
-	.strokeStyle(function(d) {return d ? "#eee" : "#000"})
-	.bottom(scale).anchor("left")
-	.add(pv.Label).text(y.tickFormat);
-    }  
-    return vis;
-  }
-
-*/
-
-  /* create data */
-/*
-  var xvals = findVals(xstring, data);
-  var yvals = findVals(ystring, data);
-  var zvals = findVals(zstring, data);
-
-  var x = getScale(xvals, w);
-  var y = getScale(yvals, h);
-  var z = pv.Colors.category20(); //, s = x.range().band / 2;
-
-  var dataMap = getDataHash(x, xvals, y, yvals, z, zvals);
-
-*/
-  var xvals = data.collect(function(d) {return d.x});
-  var yvals = data.collect(function(d) {return d.y});
-  var zvals = data.collect(function(d) {return d.z});
-  var xType; var yType;
-  
-  var legendSize = estLegendSize(zvals);
-  if(args) { xType = args.xscale; yType = args.yscale;}
-  var x = getScale(xvals, (w-legendSize), xType);
-  var y = getScale(yvals, h, yType);
-  var z = pv.Colors.category20(); //, s = x.range().band / 2;
-  data = addPosnsToHash(data,x,y);
+    var legendSize = estLegendSize(zvals);
+    if(args) { xType = args.xscale; yType = args.yscale; }
+    var x = getScale(xvals, (w-legendSize), xType);
+    var y = getScale(yvals, h, yType);
+    var z = pv.Colors.category20(); //, s = x.range().band / 2;
+    data = addPosnsToHash(data,x,y);
 
 
   /* Make root panel. */

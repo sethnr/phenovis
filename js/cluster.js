@@ -27,6 +27,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
     var markers = this.getMarkers();
     var comp = this.getComposition();
     var dotSize = this.markerSize_;
+    var labelOffset = 0;
 
     if(this.getPxSize() < 20) {
 	var bgMark = panel.add(pv.Dot)
@@ -37,6 +38,7 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	    .radius(10)
 	    .cursor("pointer").event("click", function() {c.popUp()})
     ;
+	labelOffset = 5;
 
     }
 
@@ -45,14 +47,21 @@ Cluster.prototype.addPVMark = function(panel, z) {
 
 	mark.left(this.getPxX())
 	.top(this.getPxY())
-	.strokeStyle(z(comp[0].z))
+//	.strokeStyle(z(comp[0].z))
+	.strokeStyle("gray")
+
 	.fillStyle(z(comp[0].z).alpha(0.8))
 	.radius(this.getPxSize()/2)
 	.cursor("pointer").event("click", function() {c.popUp()})
 	.anchor("center")
 	.add(pv.Label)
-	.textStyle("white")
-	.text(this.getSize()+" "+comp[0].z);
+//	.textBaseline(function(d) {if(labelOffset > 0) {return "top"} else {return "middle"}})
+	.textAlign(function(d) {if(labelOffset > 0) {return "left"} else {return "center"}})
+	.textMargin(labelOffset)
+	.textStyle("white").font("bold 11px sans-serif")
+	.textShadow("-0.1em 0 0.2em black, 0 0.1em 0.2em black, 0.1em 0 0.2em black, 0 -0.1em 0.2em black")
+	.text(this.getSize()+" "+comp[0].z)
+	;
     }
     else {
 	mark = panel.add(pv.Panel);
@@ -66,10 +75,13 @@ Cluster.prototype.addPVMark = function(panel, z) {
 	.fillStyle(function(d) {return z(d.z).alpha(0.8)})
 	.strokeStyle("gray")
 	.outerRadius(this.getPxSize()/2)
-	.anchor("center").add(pv.Label).textAngle(0)
-	.textStyle("white").cursor("pointer")
-	.text(function(d) {return d.points.length /*+" "+d.z*/});
-
+	.anchor(function(d) {return (d.points.length >= 3)? "center": "outer";}).add(pv.Label).textAngle(0)
+	.textStyle("white").font("bold 11px sans-serif")
+	.textShadow("-0.1em 0 0.2em black, 0 0.1em 0.2em black, 0.1em 0 0.2em black, 0 -0.1em 0.2em black")
+	.cursor("pointer")
+	.text(function(d) {return d.points.length /*+" "+d.z*/})
+	.textAlign(function(d) {return (d.points.length >= 3)? "center": "center";})
+	;
     }
 
     mark.
